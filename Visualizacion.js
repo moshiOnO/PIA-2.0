@@ -17,26 +17,35 @@ import * as THREE from "./three.module.js";
       } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
 
       import { GLTFLoader } from "./GLTFLoader.js";
+
+
+
       let clock = new THREE.Clock();
 
       // Your web app's Firebase configuration
       const firebaseConfig = {
         apiKey: "AIzaSyAq9J9tQNzIXhZlNy0yBiUroUvJrttEBgI",
-        authDomain: "pia-wcg.firebaseapp.com",
-        databaseURL: "https://pia-wcg-default-rtdb.firebaseio.com",
-        projectId: "pia-wcg",
+        authDomain: "pia-gcw.firebaseapp.com",
+        databaseURL: "https://pia-gcw-default-rtdb.firebaseio.com",
+        projectId: "pia-gcw",
         storageBucket: "pia-wcg.appspot.com",
         messagingSenderId: "890613599080",
         appId: "1:890613599080:web:a93221ef74d8ceba0c64dd"
       };
+
       // Initialize Firebase
       const app = initializeApp(firebaseConfig);
+
+
       // Initialize Firebase Authentication and get a reference to the service
       const auth = getAuth(app);
       auth.languageCode = "es";
+
       const provider = new GoogleAuthProvider();
+
       // Initialize Realtime Database and get a reference to the service
       const db = getDatabase();
+
       let currentUser;
       async function login() {
         await signInWithPopup(auth, provider)
@@ -67,6 +76,7 @@ import * as THREE from "./three.module.js";
       buttonLogin.addEventListener("click", async () => {
         await login();
       });
+
       buttonLogout.addEventListener("click", async () => {
         await signOut(auth)
           .then(() => {
@@ -78,18 +88,20 @@ import * as THREE from "./three.module.js";
             console.log("An error happened");
           });
       });
+
       var canvas = document.getElementById("canvas");
 
 
 
       const scene = new THREE.Scene();
       scene.background = new THREE.Color("#34495E");
+
       const camera = new THREE.PerspectiveCamera(
         60,
         canvas.width / canvas.height
       );
-      camera.position.set(0, 0, 10);
 
+      camera.position.set(0, 0, 10);
 
       var renderer = new THREE.WebGLRenderer({canvas : canvas});
       renderer.setSize(canvas.width, canvas.height);
@@ -98,10 +110,12 @@ import * as THREE from "./three.module.js";
 
       const hemisphereLight = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
       scene.add(hemisphereLight);
+
       const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
       directionalLight.position.set(1, 5, -1);
       directionalLight.castShadow = true;
       scene.add(directionalLight);
+
       const planeGeometry = new THREE.PlaneGeometry(50, 50);
       const planeMaterial = new THREE.MeshStandardMaterial({
         color: "slategrey",
@@ -140,7 +154,7 @@ import * as THREE from "./three.module.js";
       animate();
 
 //Bomberman//
-
+/*
 const MONSTORGLTF = new GLTFLoader();
 let monstOrModel; 
 let monstOrMixer; 
@@ -165,9 +179,160 @@ let monstOrMixer;
           requestAnimationFrame(animate2);
         }        
       animate2();
+*/
+/*
+        //Altair 2
+        const MONSTIRGLTF = new GLTFLoader();
+        let monstIrModel; 
+        let monstIrMixer; 
+        MONSTIRGLTF.load("./altair.glb", function (modelGLTF4) {
+          monstIrModel = modelGLTF4.scene;
+          monstIrModel.scale.set(1, 1, 1);
+          monstIrModel.position.set(11, -0.5, 15);
+          scene.add(monstIrModel);
+          if (modelGLTF4.animations && modelGLTF4.animations.length > 0) {
+            monstIrMixer = new THREE.AnimationMixer(monstIrModel);
+            const clipAction = monstIrMixer.clipAction(modelGLTF4.animations[1]);
+            clipAction.play();
+          }
+        });
+        function animate3() {
+          if (monstIrMixer) {
+            monstIrMixer.update(0.01);
+          }
+          renderer.render(scene, camera);
+          requestAnimationFrame(animate3);
+        }        
+      animate3();  
+*/    
 
-        
+/*
+      //Altair 3
+      const MONSTIRGLTF2 = new GLTFLoader();
+      let monstIrModel2; 
+      let monstIrMixer2; 
+      MONSTIRGLTF2.load("./altair.glb", function (modelGLTF4) {
+        monstIrModel2 = modelGLTF4.scene;
+        monstIrModel2.scale.set(1, 1, 1);
+        monstIrModel2.position.set(11, -0.5, 10);
+        scene.add(monstIrModel2);
 
+        if (modelGLTF4.animations && modelGLTF4.animations.length > 0) {
+          monstIrMixer2 = new THREE.AnimationMixer(monstIrModel2);
+          const clipAction = monstIrMixer2.clipAction(modelGLTF4.animations[2]);
+          clipAction.play();
+        }
+      });
+      function animate4() {
+        if (monstIrMixer2) {
+          monstIrMixer2.update(0.01);
+        }
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate4);
+      }        
+    animate4();   
+*/
+/*
+    //Altair 4
+    const MONSTIRGLTF3 = new GLTFLoader();
+    let monstIrModel3; 
+    let monstIrMixer3; 
+    MONSTIRGLTF3.load("./altair.glb", function (modelGLTF4) {
+      monstIrModel3 = modelGLTF4.scene;
+      monstIrModel3.scale.set(1, 1, 1);
+      monstIrModel3.position.set(15, -0.5, 10);
+      scene.add(monstIrModel3);
+
+      if (modelGLTF4.animations && modelGLTF4.animations.length > 0) {
+        monstIrMixer3 = new THREE.AnimationMixer(monstIrModel3);
+        const clipAction = monstIrMixer3.clipAction(modelGLTF4.animations[3]);
+        clipAction.play();
+      }
+    });
+    function animate5() {
+      if (monstIrMixer3) {
+        monstIrMixer3.update(0.01);
+      }
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate5);
+    }        
+  animate5();   
+*/
+/*
+   //Bomberman2//
+const MONSTORGLTF2 = new GLTFLoader();
+let monstOrModel2; 
+let monstOrMixer2; 
+        MONSTORGLTF2.load("./bomberman.glb", function (modelGLTF4) {
+          monstOrModel2 = modelGLTF4.scene;
+          monstOrModel2.scale.set(1, 1, 1);
+          monstOrModel2.position.set(-10, -0.5, -15);
+          scene.add(monstOrModel2);
+          if (modelGLTF4.animations && modelGLTF4.animations.length > 0) {
+            monstOrMixer2 = new THREE.AnimationMixer(monstOrModel2);
+            const clipAction = monstOrMixer2.clipAction(modelGLTF4.animations[1]);
+            clipAction.play();
+          }
+        });
+        function Banimate2() {
+          if (monstOrMixer2) {
+            monstOrMixer2.update(0.01);
+          }
+          renderer.render(scene, camera);
+          requestAnimationFrame(Banimate2);
+        }        
+      Banimate2();
+*/
+/*
+        //Bomberman3//
+const MONSTORGLTF3 = new GLTFLoader();
+let monstOrModel3; 
+let monstOrMixer3; 
+        MONSTORGLTF3.load("./bomberman.glb", function (modelGLTF4) {
+          monstOrModel3 = modelGLTF4.scene;
+          monstOrModel3.scale.set(1, 1, 1);
+          monstOrModel3.position.set(-15, -0.5, -10);
+          scene.add(monstOrModel3);
+          if (modelGLTF4.animations && modelGLTF4.animations.length > 0) {
+            monstOrMixer3 = new THREE.AnimationMixer(monstOrModel3);
+            const clipAction = monstOrMixer3.clipAction(modelGLTF4.animations[2]);
+            clipAction.play();
+          }
+        });
+        function Banimate3() {
+          if (monstOrMixer3) {
+            monstOrMixer3.update(0.01);
+          }
+          renderer.render(scene, camera);
+          requestAnimationFrame(Banimate3);
+        }        
+      Banimate3();
+*/
+/*
+      //Bomberman4//
+const MONSTORGLTF4 = new GLTFLoader();
+let monstOrModel4; 
+let monstOrMixer4; 
+        MONSTORGLTF4.load("./bomberman.glb", function (modelGLTF4) {
+          monstOrModel4 = modelGLTF4.scene;
+          monstOrModel4.scale.set(1, 1, 1);
+          monstOrModel4.position.set(-10, -0.5, -6);
+          scene.add(monstOrModel4);
+          if (modelGLTF4.animations && modelGLTF4.animations.length > 0) {
+            monstOrMixer4 = new THREE.AnimationMixer(monstOrModel4);
+            const clipAction = monstOrMixer4.clipAction(modelGLTF4.animations[3]);
+            clipAction.play();
+          }
+        });
+        function Banimate4() {
+          if (monstOrMixer4) {
+            monstOrMixer4.update(0.01);
+          }
+          renderer.render(scene, camera);
+          requestAnimationFrame(Banimate4);
+        }        
+      Banimate4();
+*/
 
 
 
@@ -175,6 +340,7 @@ let monstOrMixer;
 
 
       const loaderGLTF = new GLTFLoader();
+  /*
       loaderGLTF.load(
         "./bomb.glb",
         function (modelGLTF) {
@@ -185,7 +351,8 @@ let monstOrMixer;
           scene.add(obj);
         }
       );
-
+*/
+/*
       loaderGLTF.load(
         "./reloj_de_bolsillo.glb",
         function (modelGLTF) {
@@ -196,7 +363,8 @@ let monstOrMixer;
           scene.add(obj);
         }
       );
-
+*/
+/*
       loaderGLTF.load(
         "./stylized_eye.glb",
         function (modelGLTF) {
@@ -218,13 +386,419 @@ let monstOrMixer;
           scene.add(obj);
         }
       );
+*/
+
+// BORDES DEL ESCENARIO
 
       loaderGLTF.load(
-        "./metalbox.glb",
+        "./metal.glb",
         function (modelGLTF) {
           const obj = modelGLTF.scene;
-          obj.scale.set(0.5,0.5,0.5);
-          obj.position.set(5,-0.50,0);
+          obj.scale.set(0.1,0.1,0.1);
+          obj.position.set(22,1,25);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./metal.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.1,0.1,0.1);
+          obj.position.set(15.5,1,25);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./metal.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.1,0.1,0.1);
+          obj.position.set(9,1,25);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./metal.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.1,0.1,0.1);
+          obj.position.set(2.5,1,25);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./metal.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.1,0.1,0.1);
+          obj.position.set(-22,1,25);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./metal.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.1,0.1,0.1);
+          obj.position.set(-15.5,1,25);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./metal.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.1,0.1,0.1);
+          obj.position.set(-9,1,25);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./metal.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.1,0.1,0.1);
+          obj.position.set(-2.5,1,25);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./metal.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.1,0.1,0.1);
+          obj.position.set(22,1,-25);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./metal.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.1,0.1,0.1);
+          obj.position.set(15.5,1,-25);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./metal.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.1,0.1,0.1);
+          obj.position.set(9,1,-25);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./metal.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.1,0.1,0.1);
+          obj.position.set(2.5,1,-25);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./metal.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.1,0.1,0.1);
+          obj.position.set(-22,1,-25);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./metal.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.1,0.1,0.1);
+          obj.position.set(-15.5,1,-25);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./metal.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.1,0.1,0.1);
+          obj.position.set(-9,1,-25);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./metal.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.1,0.1,0.1);
+          obj.position.set(-2.5,1,-25);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(27,0,0);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(27,0,-4);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(27,0,4);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(27,0,8);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(27,0,12);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(27,0,16);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(27,0,20);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(27,0,24);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(27,0,-8);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(27,0,-12);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(27,0,-16);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(27,0,-20);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(-27,0,0);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(-27,0,-4);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(-27,0,4);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(-27,0,8);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(-27,0,12);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(-27,0,16);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(-27,0,20);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(-27,0,24);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(-27,0,-8);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(-27,0,-12);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(-27,0,-16);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+      loaderGLTF.load(
+        "./CajaM.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(0.01,0.01,0.01);
+          obj.position.set(-27,0,-20);
+          obj.castShadow = true;
+          scene.add(obj);
+        }
+      );
+
+ /*
+      loaderGLTF.load(
+        "./Moneda.glb",
+        function (modelGLTF) {
+          const obj = modelGLTF.scene;
+          obj.scale.set(1,1,1);
+          obj.position.set(0,0,0);
           obj.castShadow = true;
           scene.add(obj);
         }
@@ -251,7 +825,7 @@ let monstOrMixer;
           scene.add(obj);
         }
       );
-
+*/
       // Leer
       const starCountRef = ref(db, "jugadores");
       onValue(starCountRef, (snapshot) => {
