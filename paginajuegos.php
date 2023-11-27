@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
     <script type= "module" src="Visualizacion.js"></script>
+    <script type= "module" src="javas/Temporizador.js"></script>
     <title>Nombre del Juego</title>
 </head>
 <body>
     <div class="container">
-        <h1>Nombre del Juego</h1>
+        <h1 id="timer">Nombre del Juego</h1>
         <hr>
         <div class="game-box">
                 <button id="button-login">Login</button>

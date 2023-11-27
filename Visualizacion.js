@@ -1,5 +1,6 @@
 import * as THREE from "./three.module.js";
 import { OrbitControls } from "./OrbitControls.js";
+import { impTemp } from "./javas/Temporizador.js"
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
@@ -17,10 +18,10 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
 
 import { GLTFLoader } from "./GLTFLoader.js";
-
-
-
+//Necesario para animaciones
 let clock = new THREE.Clock();
+//Temporizador
+let temporizadorIniciado = false;
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -102,7 +103,7 @@ const camera = new THREE.PerspectiveCamera(
   canvas.width / canvas.height
 );
 
-camera.position.set(0, 0, 10);
+camera.position.set(0, 10, 35);
 
 var renderer = new THREE.WebGLRenderer({ canvas: canvas });
 renderer.setSize(canvas.width, canvas.height);
@@ -889,7 +890,7 @@ onValue(starCountRef, (snapshot) => {
   const data = snapshot.val();
 
   Object.entries(data).forEach(([key, value]) => {
-    console.log(`${key} ${value.x} ${value.z}`);
+    //console.log(`${key} ${value.x} ${value.z}`);
 
     const jugador = scene.getObjectByName(key);
     if (!jugador) {
@@ -927,28 +928,50 @@ function resize() {
 
 canvas.addEventListener("resize", resize);
 
-document.onkeydown = function (e) {
+document.addEventListener('keydown', function (e) {
   const jugadorActual = scene.getObjectByName(currentUser.uid);
-  //console.log(jugadorActual.position.x);
 
-  if (e.keyCode == 37) {
-    jugadorActual.position.x -= 1;
-    cambiarAccionExterna(2);
+  switch (e.key) {
+    case 'ArrowLeft':
+      jugadorActual.position.x -= .5;
+      var gradosDerecha = 270;
+      var anguloDerecha = THREE.MathUtils.degToRad(gradosDerecha);
+      jugadorActual.rotation.set(0, anguloDerecha, 0);
+      cambiarAccionExterna(2);
+      break;
+
+    case 'ArrowRight':
+      jugadorActual.position.x += .5;
+      var gradosDerecha = 90;
+      var anguloDerecha = THREE.MathUtils.degToRad(gradosDerecha);
+      jugadorActual.rotation.set(0, anguloDerecha, 0);
+      cambiarAccionExterna(2);
+      break;
+
+    case 'ArrowUp':
+      jugadorActual.position.z -= .5;
+      var gradosDerecha = 180;
+      var anguloDerecha = THREE.MathUtils.degToRad(gradosDerecha);
+      jugadorActual.rotation.set(0, anguloDerecha, 0);
+      cambiarAccionExterna(2);
+      break;
+
+    case 'ArrowDown':
+      jugadorActual.position.z += .5;
+      var gradosDerecha = 0;
+      var anguloDerecha = THREE.MathUtils.degToRad(gradosDerecha);
+      jugadorActual.rotation.set(0, anguloDerecha, 0);
+      cambiarAccionExterna(2);
+      break;
+
+    default:
+      // Otras teclas, si es necesario
+      break;
   }
 
-  if (e.keyCode == 39) {
-    jugadorActual.position.x += 1;
-    cambiarAccionExterna(2);
-  }
-
-  if (e.keyCode == 38) {
-    jugadorActual.position.z -= 1;
-    cambiarAccionExterna(2);
-    //castPJ("./altair.glb", "monsterModel", currentUser.uid, 3);
-  }
-
-  if (e.keyCode == 40) {
-    jugadorActual.position.z += 1;
+  if (!temporizadorIniciado) {
+    impTemp(true);
+    temporizadorIniciado = true;
     cambiarAccionExterna(2);
   }
 
@@ -957,7 +980,8 @@ document.onkeydown = function (e) {
     jugadorActual.position.x,
     jugadorActual.position.z
   );
-};
+});
+
 
 document.addEventListener('keyup', (event) => {
   cambiarAccionExterna(0);
@@ -976,5 +1000,7 @@ function cambiarAccionExterna(nuevaAccion) {
 }
 
 scene.add(plane);
+
+
 
 const cameraControl = new OrbitControls(camera, renderer.domElement);
