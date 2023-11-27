@@ -103,7 +103,9 @@ const camera = new THREE.PerspectiveCamera(
   canvas.width / canvas.height
 );
 
-camera.position.set(0, 10, 35);
+//Camera settings
+camera.position.set(0, 30, 40);
+camera.lookAt(0,0,0);
 
 var renderer = new THREE.WebGLRenderer({ canvas: canvas });
 renderer.setSize(canvas.width, canvas.height);
@@ -149,8 +151,11 @@ async function castPJ(direction, namemesh, meshID, action) {
     //namemesh.rotateX(angulo);
     namemesh.rotateY(angulo);
     //namemesh.rotateZ(angulo);
-
     namemesh.name = meshID;
+    //Carga de colisión
+    let col = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+    //col.setFromObject(namemesh);
+    //console.log(col);
 
     scene.add(namemesh);
     if (modelGLTF4.animations && modelGLTF4.animations.length > 0) {
@@ -167,6 +172,12 @@ async function castPJ(direction, namemesh, meshID, action) {
 
 
     function animate() {
+
+      col.setFromObject(namemesh);
+      namemesh.userData.boundingBox = col;
+      //console.log(col);
+      
+      
       if (monsterMixer) {
         monsterMixer.update(0.01);
       }
@@ -181,197 +192,41 @@ async function castPJ(direction, namemesh, meshID, action) {
 
 // 0:Idle,  1:Explotar bomba,  2:Caminar,  3:Se acabó el tiempo
 
-castPJ("./bomberman.glb", "monsterModel", "meshID", 0);
-
-
-
-//Bomberman//
-/*
-const MONSTORGLTF = new GLTFLoader();
-let monstOrModel; 
-let monstOrMixer; 
-        MONSTORGLTF.load("./bomberman.glb", function (modelGLTF4) {
-          monstOrModel = modelGLTF4.scene;
-          monstOrModel.scale.set(1, 1, 1);
-          monstOrModel.position.set(-15, -0.5, -15);
-          scene.add(monstOrModel);
-          if (modelGLTF4.animations && modelGLTF4.animations.length > 0) {
-            monstOrMixer = new THREE.AnimationMixer(monstOrModel);
-
-
-            const clipAction = monstOrMixer.clipAction(modelGLTF4.animations[0]);
-            clipAction.play();
-          }
-        });
-        function animate2() {
-          if (monstOrMixer) {
-            monstOrMixer.update(0.01);
-          }
-          renderer.render(scene, camera);
-          requestAnimationFrame(animate2);
-        }        
-      animate2();
-*/
-/*
-        //Altair 2
-        const MONSTIRGLTF = new GLTFLoader();
-        let monstIrModel; 
-        let monstIrMixer; 
-        MONSTIRGLTF.load("./altair.glb", function (modelGLTF4) {
-          monstIrModel = modelGLTF4.scene;
-          monstIrModel.scale.set(1, 1, 1);
-          monstIrModel.position.set(11, -0.5, 15);
-          scene.add(monstIrModel);
-          if (modelGLTF4.animations && modelGLTF4.animations.length > 0) {
-            monstIrMixer = new THREE.AnimationMixer(monstIrModel);
-            const clipAction = monstIrMixer.clipAction(modelGLTF4.animations[1]);
-            clipAction.play();
-          }
-        });
-        function animate3() {
-          if (monstIrMixer) {
-            monstIrMixer.update(0.01);
-          }
-          renderer.render(scene, camera);
-          requestAnimationFrame(animate3);
-        }        
-      animate3();  
-*/
-
-/*
-      //Altair 3
-      const MONSTIRGLTF2 = new GLTFLoader();
-      let monstIrModel2; 
-      let monstIrMixer2; 
-      MONSTIRGLTF2.load("./altair.glb", function (modelGLTF4) {
-        monstIrModel2 = modelGLTF4.scene;
-        monstIrModel2.scale.set(1, 1, 1);
-        monstIrModel2.position.set(11, -0.5, 10);
-        scene.add(monstIrModel2);
-
-        if (modelGLTF4.animations && modelGLTF4.animations.length > 0) {
-          monstIrMixer2 = new THREE.AnimationMixer(monstIrModel2);
-          const clipAction = monstIrMixer2.clipAction(modelGLTF4.animations[2]);
-          clipAction.play();
-        }
-      });
-      function animate4() {
-        if (monstIrMixer2) {
-          monstIrMixer2.update(0.01);
-        }
-        renderer.render(scene, camera);
-        requestAnimationFrame(animate4);
-      }        
-    animate4();   
-*/
-/*
-    //Altair 4
-    const MONSTIRGLTF3 = new GLTFLoader();
-    let monstIrModel3; 
-    let monstIrMixer3; 
-    MONSTIRGLTF3.load("./altair.glb", function (modelGLTF4) {
-      monstIrModel3 = modelGLTF4.scene;
-      monstIrModel3.scale.set(1, 1, 1);
-      monstIrModel3.position.set(15, -0.5, 10);
-      scene.add(monstIrModel3);
-
-      if (modelGLTF4.animations && modelGLTF4.animations.length > 0) {
-        monstIrMixer3 = new THREE.AnimationMixer(monstIrModel3);
-        const clipAction = monstIrMixer3.clipAction(modelGLTF4.animations[3]);
-        clipAction.play();
-      }
-    });
-    function animate5() {
-      if (monstIrMixer3) {
-        monstIrMixer3.update(0.01);
-      }
-      renderer.render(scene, camera);
-      requestAnimationFrame(animate5);
-    }        
-  animate5();   
-*/
-/*
-   //Bomberman2//
-const MONSTORGLTF2 = new GLTFLoader();
-let monstOrModel2; 
-let monstOrMixer2; 
-        MONSTORGLTF2.load("./bomberman.glb", function (modelGLTF4) {
-          monstOrModel2 = modelGLTF4.scene;
-          monstOrModel2.scale.set(1, 1, 1);
-          monstOrModel2.position.set(-10, -0.5, -15);
-          scene.add(monstOrModel2);
-          if (modelGLTF4.animations && modelGLTF4.animations.length > 0) {
-            monstOrMixer2 = new THREE.AnimationMixer(monstOrModel2);
-            const clipAction = monstOrMixer2.clipAction(modelGLTF4.animations[1]);
-            clipAction.play();
-          }
-        });
-        function Banimate2() {
-          if (monstOrMixer2) {
-            monstOrMixer2.update(0.01);
-          }
-          renderer.render(scene, camera);
-          requestAnimationFrame(Banimate2);
-        }        
-      Banimate2();
-*/
-/*
-        //Bomberman3//
-const MONSTORGLTF3 = new GLTFLoader();
-let monstOrModel3; 
-let monstOrMixer3; 
-        MONSTORGLTF3.load("./bomberman.glb", function (modelGLTF4) {
-          monstOrModel3 = modelGLTF4.scene;
-          monstOrModel3.scale.set(1, 1, 1);
-          monstOrModel3.position.set(-15, -0.5, -10);
-          scene.add(monstOrModel3);
-          if (modelGLTF4.animations && modelGLTF4.animations.length > 0) {
-            monstOrMixer3 = new THREE.AnimationMixer(monstOrModel3);
-            const clipAction = monstOrMixer3.clipAction(modelGLTF4.animations[2]);
-            clipAction.play();
-          }
-        });
-        function Banimate3() {
-          if (monstOrMixer3) {
-            monstOrMixer3.update(0.01);
-          }
-          renderer.render(scene, camera);
-          requestAnimationFrame(Banimate3);
-        }        
-      Banimate3();
-*/
-/*
-      //Bomberman4//
-const MONSTORGLTF4 = new GLTFLoader();
-let monstOrModel4; 
-let monstOrMixer4; 
-        MONSTORGLTF4.load("./bomberman.glb", function (modelGLTF4) {
-          monstOrModel4 = modelGLTF4.scene;
-          monstOrModel4.scale.set(1, 1, 1);
-          monstOrModel4.position.set(-10, -0.5, -6);
-          scene.add(monstOrModel4);
-          if (modelGLTF4.animations && modelGLTF4.animations.length > 0) {
-            monstOrMixer4 = new THREE.AnimationMixer(monstOrModel4);
-            const clipAction = monstOrMixer4.clipAction(modelGLTF4.animations[3]);
-            clipAction.play();
-          }
-        });
-        function Banimate4() {
-          if (monstOrMixer4) {
-            monstOrMixer4.update(0.01);
-          }
-          renderer.render(scene, camera);
-          requestAnimationFrame(Banimate4);
-        }        
-      Banimate4();
-*/
-
-
-
+//castPJ("./bomberman.glb", "monsterModel", "meshID", 0);
 
 
 
 const loaderGLTF = new GLTFLoader();
+
+async function castObjSquare(dirMesh, pX, pY, pz, nameMesh){
+  loaderGLTF.load(
+    dirMesh,
+    function (modelGLTF) {
+      //Carga de mesh
+      const obj = modelGLTF.scene;
+      obj.scale.set(1,1,1);
+      obj.position.set(pX,pY,pz);
+      obj.castShadow = true;
+      obj.receiveShadow = true;
+      obj.name = nameMesh;
+      //console.log(obj.name);
+      //Carga de colisión
+      let col = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+      col.setFromObject(obj);
+      //console.log(col); 
+      // Haciendo col accesible externamente
+      obj.userData.boundingBox = col;
+      //console.log(obj.userData.boundingBox);
+
+      scene.add(obj);
+    }
+  );
+
+}
+
+//castObj("./bomb.glb", 15, 1, -15);
+castObjSquare("./zapatos.glb", 5, .5, 4, "speed");
+
 /*
     loaderGLTF.load(
       "./bomb.glb",
@@ -933,7 +788,7 @@ document.addEventListener('keydown', function (e) {
 
   switch (e.key) {
     case 'ArrowLeft':
-      jugadorActual.position.x -= .5;
+      jugadorActual.position.x -= .5;      
       var gradosDerecha = 270;
       var anguloDerecha = THREE.MathUtils.degToRad(gradosDerecha);
       jugadorActual.rotation.set(0, anguloDerecha, 0);
@@ -971,8 +826,7 @@ document.addEventListener('keydown', function (e) {
 
   if (!temporizadorIniciado) {
     impTemp(true);
-    temporizadorIniciado = true;
-    cambiarAccionExterna(2);
+    temporizadorIniciado = true;    
   }
 
   writeUserData(
@@ -980,13 +834,46 @@ document.addEventListener('keydown', function (e) {
     jugadorActual.position.x,
     jugadorActual.position.z
   );
+
+  checkcollision(1);
+
+
 });
 
 
 document.addEventListener('keyup', (event) => {
-  cambiarAccionExterna(0);
+  //cambiarAccionExterna(0);
 });
 
+//Checar colisiones con powerups
+function checkcollision(powerup) {
+  let powerName;
+  switch (powerup) {
+    case 1:
+      powerName = "speed";      
+      break;
+    default:
+      break;
+  }
+
+  const jugadorActual = scene.getObjectByName(currentUser.uid);
+  const powerupMesh = scene.getObjectByName(powerName);  
+
+  // Asegúrate de que playerBB y powerupBB sean instancias de Box3
+  let playerBB = jugadorActual.userData.boundingBox;
+  let powerupBB = powerupMesh.userData.boundingBox; 
+
+  // Comprueba la intersección
+  if (playerBB.intersectsBox(powerupBB)) {
+    console.log("¡Colisión detectada!");
+  }
+  
+}
+
+
+
+
+//Cambiar animación
 function cambiarAccionExterna(nuevaAccion) {
   const jugadorActual = scene.getObjectByName(currentUser.uid);
 
