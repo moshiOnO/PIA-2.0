@@ -129,30 +129,60 @@ plane.position.set(0, -0.5, 0);
 
 
 //Altair//
-const MONSTERGLTF = new GLTFLoader();
-let monsterMixer;
-MONSTERGLTF.load("./altair.glb", function (modelGLTF4) {
-  const monsterModel = modelGLTF4.scene;
-  monsterModel.scale.set(1, 1, 1);
-  monsterModel.position.set(15, -0.5, 15);
-  scene.add(monsterModel);
-  if (modelGLTF4.animations && modelGLTF4.animations.length > 0) {
-    monsterMixer = new THREE.AnimationMixer(monsterModel);
-    //0, 1, 2, 3
-    //Programar número de animación por reproducir (idle,bomb,run, dead)
-    const clipAction = monsterMixer.clipAction(modelGLTF4.animations[0]);
-    clipAction.play();
-  }
-});
 
-function animate() {
-  if (monsterMixer) {
-    monsterMixer.update(0.01);
-  }
-  renderer.render(scene, camera);
-  requestAnimationFrame(animate);
+//cast PJ
+let clipAction;
+let modelGLTF4ext;
+async function castPJ(direction, namemesh, meshID, action) {
+  const MONSTERGLTF = new GLTFLoader();
+  let monsterMixer;
+  MONSTERGLTF.load(direction, function (modelGLTF4) {
+    const namemesh = modelGLTF4.scene;
+    namemesh.scale.set(1, 1, 1);
+    namemesh.position.set(15, -0.5, 15);
+
+    var grados = 180;
+    var angulo = THREE.MathUtils.degToRad(grados);
+    //var angulo = Math.PI / 4; // el ángulo de rotación en radianes
+
+    //namemesh.rotateX(angulo);
+    namemesh.rotateY(angulo);
+    //namemesh.rotateZ(angulo);
+
+    namemesh.name = meshID;
+
+    scene.add(namemesh);
+    if (modelGLTF4.animations && modelGLTF4.animations.length > 0) {
+      monsterMixer = new THREE.AnimationMixer(namemesh);
+      //0, 1, 2, 3
+      //Programar número de animación por reproducir (idle,bomb,run, dead)
+      clipAction = monsterMixer.clipAction(modelGLTF4.animations[action]);
+      clipAction.play();
+    }
+
+    namemesh.userData.mixer = monsterMixer;
+    namemesh.userData.action = clipAction;
+    modelGLTF4ext = modelGLTF4;
+
+
+    function animate() {
+      if (monsterMixer) {
+        monsterMixer.update(0.01);
+      }
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+  });
+
 }
-animate();
+
+// 0:Idle,  1:Explotar bomba,  2:Caminar,  3:Se acabó el tiempo
+
+castPJ("./bomberman.glb", "monsterModel", "meshID", 0);
+
+
 
 //Bomberman//
 /*
@@ -828,6 +858,32 @@ loaderGLTF.load(
      );
 */
 // Leer
+
+// const MONSTERGLTF = new GLTFLoader();
+// let monsterMixer;
+// MONSTERGLTF.load("./altair.glb", function (modelGLTF4) {
+//   const monsterModel = modelGLTF4.scene;
+//   monsterModel.scale.set(1, 1, 1);
+//   monsterModel.position.set(15, -0.5, 15);
+//   scene.add(monsterModel);
+//   if (modelGLTF4.animations && modelGLTF4.animations.length > 0) {
+//     monsterMixer = new THREE.AnimationMixer(monsterModel);
+//     //0, 1, 2, 3
+//     //Programar número de animación por reproducir (idle,bomb,run, dead)
+//     const clipAction = monsterMixer.clipAction(modelGLTF4.animations[0]);
+//     clipAction.play();
+//   }
+// });
+
+// function animate() {
+//   if (monsterMixer) {
+//     monsterMixer.update(0.01);
+//   }
+//   renderer.render(scene, camera);
+//   requestAnimationFrame(animate);
+// }
+// animate();
+
 const starCountRef = ref(db, "jugadores");
 onValue(starCountRef, (snapshot) => {
   const data = snapshot.val();
@@ -837,14 +893,16 @@ onValue(starCountRef, (snapshot) => {
 
     const jugador = scene.getObjectByName(key);
     if (!jugador) {
-      const geometry = new THREE.BoxGeometry(1, 1, 1);
-      const material = new THREE.MeshPhongMaterial();
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.castShadow = true;
-      mesh.position.set(value.x, 0, value.z);
-      mesh.material.color = new THREE.Color(Math.random() * 0xffffff);
-      mesh.name = key;
-      scene.add(mesh);
+      // const geometry = new THREE.BoxGeometry(1, 1, 1);
+      // const material = new THREE.MeshPhongMaterial();
+      // const mesh = new THREE.Mesh(geometry, material);
+      // mesh.castShadow = true;
+      // mesh.position.set(value.x, 0, value.z);
+      // mesh.material.color = new THREE.Color(Math.random() * 0xffffff);
+      // mesh.name = key;
+      //monsterModel.name = key;
+      //scene.add(mesh);
+      castPJ("./altair.glb", "monsterModel", key, 0);
     }
 
     scene.getObjectByName(key).position.x = value.x;
@@ -871,21 +929,27 @@ canvas.addEventListener("resize", resize);
 
 document.onkeydown = function (e) {
   const jugadorActual = scene.getObjectByName(currentUser.uid);
+  //console.log(jugadorActual.position.x);
 
   if (e.keyCode == 37) {
     jugadorActual.position.x -= 1;
+    cambiarAccionExterna(2);
   }
 
   if (e.keyCode == 39) {
     jugadorActual.position.x += 1;
+    cambiarAccionExterna(2);
   }
 
   if (e.keyCode == 38) {
     jugadorActual.position.z -= 1;
+    cambiarAccionExterna(2);
+    //castPJ("./altair.glb", "monsterModel", currentUser.uid, 3);
   }
 
   if (e.keyCode == 40) {
     jugadorActual.position.z += 1;
+    cambiarAccionExterna(2);
   }
 
   writeUserData(
@@ -894,6 +958,22 @@ document.onkeydown = function (e) {
     jugadorActual.position.z
   );
 };
+
+document.addEventListener('keyup', (event) => {
+  cambiarAccionExterna(0);
+});
+
+function cambiarAccionExterna(nuevaAccion) {
+  const jugadorActual = scene.getObjectByName(currentUser.uid);
+
+  if (jugadorActual.userData.action) {
+    let currentTime = jugadorActual.userData.action.time;
+    jugadorActual.userData.action.stop(); // Detener la acción actual si es necesario
+    jugadorActual.userData.action = jugadorActual.userData.mixer.clipAction(modelGLTF4ext.animations[nuevaAccion]);
+    jugadorActual.userData.action.time = currentTime;
+    jugadorActual.userData.action.play();
+  }
+}
 
 scene.add(plane);
 
