@@ -92,26 +92,19 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 //Camera settings
-//camera.position.set(0, 40, 70);//TV
-//camera.position.set(0, 35, -40);//CAMP
-//camera.position.set(0, 40, -45);//FABRIC
 camera.lookAt(0, 0, 0);
-
 var renderer = new THREE.WebGLRenderer({ canvas: canvas });
 renderer.setSize(canvas.width, canvas.height);
 renderer.shadowMap.enabled = true;
-
-
 const hemisphereLight = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
 scene.add(hemisphereLight);
-
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(1, 5, -1);
 directionalLight.castShadow = true;
 scene.add(directionalLight);
+
 //LoaderGLTF
 const loaderGLTF = new GLTFLoader();
-
 //Función para castear modelos sin collisions
 function castModel(modelDIR, pX, pY, pZ) {
   // Cargar modelo
@@ -131,32 +124,7 @@ function castModel(modelDIR, pX, pY, pZ) {
   });
 
 }
-//Generación random de escenarios
-// Función para generar un número aleatorio entre 1 y 3
-function RandNum() {
-  return Math.floor(Math.random() * 3) + 1;
-}
-switch (RandNum()) {
-  case 1:
-    castModel("./TV.glb", -5, -12.2, 0); //Cast TV Scenario
-    camera.position.set(0, 45, -30);
-    break;
-
-  case 2:
-    castModel("./CAMP.glb", -5, -12.2, 0); //Cast CAMP Scenario
-    camera.position.set(0, 35, -40);
-    break;
-
-  case 3:
-    castModel("./FABRIC.glb", -5, -12.2, 0); //Cast FABRIC Scenario
-    camera.position.set(0, 55, -36);
-    break;
-
-  default:
-    break;
-}
-//Altair//
-//cast PJ
+//Función para castear PJ con su colisión propia
 let clipAction;
 let modelGLTF4ext;
 async function castPJ(direction, namemesh, meshID, action) {
@@ -212,13 +180,9 @@ async function castPJ(direction, namemesh, meshID, action) {
   });
 
 }
-
 // 0:Idle,  1:Explotar bomba,  2:Caminar,  3:Se acabó el tiempo
-
 //castPJ("./bomberman.glb", "monsterModel", "meshID", 0);
-
-
-
+//Función para castear modelos con colisión cuadrada
 async function castObjSquare(dirMesh, pX, pY, pz, nameMesh, scale) {
   loaderGLTF.load(
     dirMesh,
@@ -246,8 +210,34 @@ async function castObjSquare(dirMesh, pX, pY, pz, nameMesh, scale) {
 }
 
 
-// COLISIONES DE POWERUPS
 
+//Generación random de escenarios
+// Función para generar un número aleatorio entre 1 y 3
+function RandNum() {
+  return Math.floor(Math.random() * 3) + 1;
+}
+let scenarioNum = RandNum();
+switch (scenarioNum) {
+  case 1:
+    castModel("./TV.glb", -5, -12.2, 0); //Cast TV Scenario
+    camera.position.set(0, 45, -30);
+    break;
+
+  case 2:
+    castModel("./CAMP.glb", -5, -12.2, 0); //Cast CAMP Scenario
+    camera.position.set(0, 35, -40);
+    break;
+
+  case 3:
+    castModel("./FABRIC.glb", -5, -12.2, 0); //Cast FABRIC Scenario
+    camera.position.set(0, 55, -36);
+    break;
+
+  default:
+    break;
+}
+
+// COLISIONES DE POWERUPS
 castObjSquare("./zapatos.glb", 5, .5, 4, "speed", 1);
 castObjSquare("./ice.glb", 5, -.5, -8, "freeze", 3);
 
@@ -286,32 +276,6 @@ castObjSquare("./ice.glb", 5, -.5, -8, "freeze", 3);
        }
      );
 */
-// Leer
-
-// const MONSTERGLTF = new GLTFLoader();
-// let monsterMixer;
-// MONSTERGLTF.load("./altair.glb", function (modelGLTF4) {
-//   const monsterModel = modelGLTF4.scene;
-//   monsterModel.scale.set(1, 1, 1);
-//   monsterModel.position.set(15, -0.5, 15);
-//   scene.add(monsterModel);
-//   if (modelGLTF4.animations && modelGLTF4.animations.length > 0) {
-//     monsterMixer = new THREE.AnimationMixer(monsterModel);
-//     //0, 1, 2, 3
-//     //Programar número de animación por reproducir (idle,bomb,run, dead)
-//     const clipAction = monsterMixer.clipAction(modelGLTF4.animations[0]);
-//     clipAction.play();
-//   }
-// });
-
-// function animate() {
-//   if (monsterMixer) {
-//     monsterMixer.update(0.01);
-//   }
-//   renderer.render(scene, camera);
-//   requestAnimationFrame(animate);
-// }
-// animate();
 
 const starCountRef = ref(db, "jugadores");
 onValue(starCountRef, (snapshot) => {
@@ -338,7 +302,6 @@ onValue(starCountRef, (snapshot) => {
     scene.getObjectByName(key).position.z = value.z;
   });
 });
-
 //Escribir
 function writeUserData(userId, positionX, positionZ) {
   set(ref(db, "jugadores/" + userId), {
@@ -346,19 +309,16 @@ function writeUserData(userId, positionX, positionZ) {
     z: positionZ,
   });
 }
-
 function resize() {
   camera.aspect = canvas.innerWidth / canvas.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(canvas.innerWidth, canvas.innerHeight);
   renderer.render(scene, camera);
 }
-
 canvas.addEventListener("resize", resize);
 
 
 var velocidad = 0.25; // Velocidad inicial del jugador
-
 document.addEventListener('keydown', function (e) {
   const jugadorActual = scene.getObjectByName(currentUser.uid);
 
@@ -415,11 +375,11 @@ document.addEventListener('keydown', function (e) {
   checkCollision(2);
 
 });
-
-
 document.addEventListener('keyup', (event) => {
   cambiarAccionExterna(0);
 });
+
+
 
 //Checar colisiones con powerups
 function checkCollision(powerup) {
@@ -447,7 +407,7 @@ function checkCollision(powerup) {
           SpeedUp();
           break;
         case 2:
-          FreezeTime();
+          congelarTiempo();
           break;
         default:
           break;
@@ -457,8 +417,6 @@ function checkCollision(powerup) {
     }
   }
 }
-
-
 //Funciónes de activación de powerups
 function SpeedUp() {
   // Aumentar temporalmente la velocidad
@@ -470,10 +428,6 @@ function SpeedUp() {
     velocidad /= 2;
   }, 5000); // 5000 milisegundos = 5 segundos
 }
-function FreezeTime() {
-  congelarTiempo();
-}
-
 //Eliminación de modelos
 function eliminarModelo(modelo) {
   // Elimina el modelo de la escena
@@ -486,7 +440,6 @@ function eliminarModelo(modelo) {
   // Actualiza la escena para reflejar los cambios
   renderer.render(scene, camera);
 }
-
 //Cambiar animación
 function cambiarAccionExterna(nuevaAccion) {
   const jugadorActual = scene.getObjectByName(currentUser.uid);
@@ -499,9 +452,5 @@ function cambiarAccionExterna(nuevaAccion) {
     jugadorActual.userData.action.play();
   }
 }
-
-// scene.add(plane);
-
-
 
 const cameraControl = new OrbitControls(camera, renderer.domElement);
