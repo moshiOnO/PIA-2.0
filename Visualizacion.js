@@ -1,6 +1,6 @@
 import * as THREE from "./three.module.js";
 import { OrbitControls } from "./OrbitControls.js";
-import { impTemp } from "./javas/Temporizador.js"
+import { impTemp, congelarTiempo } from "./javas/Temporizador.js"
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
@@ -16,13 +16,6 @@ import {
   onValue,
   set,
 } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
-
-import { GLTFLoader } from "./GLTFLoader.js";
-//Necesario para animaciones
-let clock = new THREE.Clock();
-//Temporizador
-let temporizadorIniciado = false;
-
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCD3jq-3G-6i6ECYAUa6gt0MYrLvco6R4I",
@@ -34,20 +27,14 @@ const firebaseConfig = {
   appId: "1:594098419666:web:0b1bb2cd7f8841a9f3fa0b",
   measurementId: "G-XPD4EB4FL4"
 };
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
-
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
 auth.languageCode = "es";
-
 const provider = new GoogleAuthProvider();
-
 // Initialize Realtime Database and get a reference to the service
 const db = getDatabase();
-
 let currentUser;
 async function login() {
   await signInWithPopup(auth, provider)
@@ -57,7 +44,7 @@ async function login() {
       const token = credential.accessToken;
       // The signed-in user info.
       currentUser = result.user;
-      console.log(currentUser);
+      //console.log(currentUser);
       writeUserData(currentUser.uid, 0, 0);
     })
     .catch((error) => {
@@ -71,14 +58,11 @@ async function login() {
       console.log(error);
     });
 }
-
 const buttonLogin = document.getElementById("button-login");
 const buttonLogout = document.getElementById("button-logout");
-
 buttonLogin.addEventListener("click", async () => {
   await login();
 });
-
 buttonLogout.addEventListener("click", async () => {
   await signOut(auth)
     .then(() => {
@@ -91,21 +75,27 @@ buttonLogout.addEventListener("click", async () => {
     });
 });
 
+
+//Cosas de THREE.js
+import { GLTFLoader } from "./GLTFLoader.js";
+//Necesario para animaciones
+let clock = new THREE.Clock();
+//Temporizador
+let temporizadorIniciado = false;
+
 var canvas = document.getElementById("canvas");
-
-
-
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#34495E");
-
 const camera = new THREE.PerspectiveCamera(
   60,
   canvas.width / canvas.height
 );
 
 //Camera settings
-camera.position.set(0, 30, 40);
-camera.lookAt(0,0,0);
+//camera.position.set(0, 40, 70);//TV
+//camera.position.set(0, 35, -40);//CAMP
+//camera.position.set(0, 40, -45);//FABRIC
+camera.lookAt(0, 0, 0);
 
 var renderer = new THREE.WebGLRenderer({ canvas: canvas });
 renderer.setSize(canvas.width, canvas.height);
@@ -119,20 +109,53 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(1, 5, -1);
 directionalLight.castShadow = true;
 scene.add(directionalLight);
+//LoaderGLTF
+const loaderGLTF = new GLTFLoader();
 
-const planeGeometry = new THREE.PlaneGeometry(50, 50);
-const planeMaterial = new THREE.MeshStandardMaterial({
-  color: "slategrey",
-});
-const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-plane.receiveShadow = true;
-plane.rotateX(-Math.PI / 2);
-plane.position.set(0, -0.5, 0);
+//Función para castear modelos sin collisions
+function castModel(modelDIR, pX, pY, pZ) {
+  // Cargar modelo
+  loaderGLTF.load(modelDIR, (gltf) => {
+    // Modelo cargado con éxito
+    // Accede al objeto 3D del modelo
+    const modelo = gltf.scene;
+    // Ajusta la posición, escala, rotación según tus necesidades
+    modelo.position.set(-5, -12.2, 0);
+    modelo.scale.set(1, 1, 1);
+    // Rotar 90 grados alrededor del eje Y
+    modelo.rotation.set(0, Math.PI / 2, 0);
+    // Asegúrate de que el modelo pueda recibir sombras si es necesario
+    modelo.receiveShadow = true;
+    // Añade el modelo a la escena
+    scene.add(modelo);
+  });
 
+}
+//Generación random de escenarios
+// Función para generar un número aleatorio entre 1 y 3
+function RandNum() {
+  return Math.floor(Math.random() * 3) + 1;
+}
+switch (RandNum()) {
+  case 1:
+    castModel("./TV.glb", -5, -12.2, 0); //Cast TV Scenario
+    camera.position.set(0, 45, -30);
+    break;
 
+  case 2:
+    castModel("./CAMP.glb", -5, -12.2, 0); //Cast CAMP Scenario
+    camera.position.set(0, 35, -40);
+    break;
 
+  case 3:
+    castModel("./FABRIC.glb", -5, -12.2, 0); //Cast FABRIC Scenario
+    camera.position.set(0, 55, -36);
+    break;
+
+  default:
+    break;
+}
 //Altair//
-
 //cast PJ
 let clipAction;
 let modelGLTF4ext;
@@ -176,8 +199,8 @@ async function castPJ(direction, namemesh, meshID, action) {
       col.setFromObject(namemesh);
       namemesh.userData.boundingBox = col;
       //console.log(col);
-      
-      
+
+
       if (monsterMixer) {
         monsterMixer.update(0.01);
       }
@@ -196,16 +219,14 @@ async function castPJ(direction, namemesh, meshID, action) {
 
 
 
-const loaderGLTF = new GLTFLoader();
-
-async function castObjSquare(dirMesh, pX, pY, pz, nameMesh){
+async function castObjSquare(dirMesh, pX, pY, pz, nameMesh, scale) {
   loaderGLTF.load(
     dirMesh,
     function (modelGLTF) {
       //Carga de mesh
       const obj = modelGLTF.scene;
-      obj.scale.set(1,1,1);
-      obj.position.set(pX,pY,pz);
+      obj.scale.set(scale, scale, scale);
+      obj.position.set(pX, pY, pz);
       obj.castShadow = true;
       obj.receiveShadow = true;
       obj.name = nameMesh;
@@ -224,107 +245,13 @@ async function castObjSquare(dirMesh, pX, pY, pz, nameMesh){
 
 }
 
-async function castBorderObjSquare(dirMesh, pX, pY, pz, nameMesh){
-  loaderGLTF.load(
-    dirMesh,
-    function (modelGLTF) {
-      //Carga de mesh
-      const obj = modelGLTF.scene;
-      obj.scale.set(0.1,0.1,0.1);
-      obj.position.set(pX,pY,pz);
-      obj.castShadow = true;
-      obj.receiveShadow = true;
-      obj.name = nameMesh;
-      //console.log(obj.name);
-      //Carga de colisión
-      let col = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-      col.setFromObject(obj);
-      //console.log(col); 
-      // Haciendo col accesible externamente
-      obj.userData.boundingBox = col;
-      //console.log(obj.userData.boundingBox);
-
-      scene.add(obj);
-    }
-  );
-
-}
-
-async function castBorder2ObjSquare(dirMesh, pX, pY, pz, nameMesh){
-  loaderGLTF.load(
-    dirMesh,
-    function (modelGLTF) {
-      //Carga de mesh
-      const obj = modelGLTF.scene;
-      obj.scale.set(0.01,0.01,0.01);
-      obj.position.set(pX,pY,pz);
-      obj.castShadow = true;
-      obj.receiveShadow = true;
-      obj.name = nameMesh;
-      //console.log(obj.name);
-      //Carga de colisión
-      let col = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-      col.setFromObject(obj);
-      //console.log(col); 
-      // Haciendo col accesible externamente
-      obj.userData.boundingBox = col;
-      //console.log(obj.userData.boundingBox);
-
-      scene.add(obj);
-    }
-  );
-
-}
 
 // COLISIONES DE POWERUPS
 
-castObjSquare("./zapatos.glb", 5, .5, 4, "speed");
+castObjSquare("./zapatos.glb", 5, .5, 4, "speed", 1);
+castObjSquare("./ice.glb", 5, -.5, -8, "freeze", 3);
 
-// BORDES DEL ESCENARIO
 
-castBorderObjSquare("./metal.glb",22,1,25,"Borde");
-castBorderObjSquare("./metal.glb",15.5,1,25,"Borde");
-castBorderObjSquare("./metal.glb",9,1,25,"Borde");
-castBorderObjSquare("./metal.glb",2.5,1,25,"Borde");
-castBorderObjSquare("./metal.glb",-22,1,25,"Borde");
-castBorderObjSquare("./metal.glb",-15,1,25,"Borde");
-castBorderObjSquare("./metal.glb",-9,1,25,"Borde");
-castBorderObjSquare("./metal.glb",-2.5,1,25,"Borde");
-castBorderObjSquare("./metal.glb",22,1,-25,"Borde");
-castBorderObjSquare("./metal.glb",15.5,1,-25,"Borde");
-castBorderObjSquare("./metal.glb",9,1,-25,"Borde");
-castBorderObjSquare("./metal.glb",2.5,1,-25,"Borde");
-castBorderObjSquare("./metal.glb",-22,1,-25,"Borde");
-castBorderObjSquare("./metal.glb",-15,1,-25,"Borde");
-castBorderObjSquare("./metal.glb",-9,1,-25,"Borde");
-castBorderObjSquare("./metal.glb",-2.5,1,-25,"Borde");
-
-castBorder2ObjSquare("./CajaM.glb",27,0,0,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",27,0,-4,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",27,0,4,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",27,0,8,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",27,0,12,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",27,0,16,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",27,0,20,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",27,0,24,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",27,0,-8,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",27,0,-12,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",27,0,-16,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",27,0,-20,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",-27,0,0,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",-27,0,-4,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",-27,0,4,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",-27,0,8,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",-27,0,12,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",-27,0,16,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",-27,0,20,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",-27,0,24,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",-27,0,-8,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",-27,0,-12,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",-27,0,-16,"Borde2");
-castBorder2ObjSquare("./CajaM.glb",-27,0,-20,"Borde2");
-
- 
 /*
      loaderGLTF.load(
        "./Moneda.glb",
@@ -436,15 +363,15 @@ document.addEventListener('keydown', function (e) {
   const jugadorActual = scene.getObjectByName(currentUser.uid);
 
   switch (e.key) {
-    case 'ArrowLeft':
-      jugadorActual.position.x -= velocidad;      
+    case 'ArrowRight':
+      jugadorActual.position.x -= velocidad;
       var gradosDerecha = 270;
       var anguloDerecha = THREE.MathUtils.degToRad(gradosDerecha);
       jugadorActual.rotation.set(0, anguloDerecha, 0);
       cambiarAccionExterna(2);
       break;
 
-    case 'ArrowRight':
+    case 'ArrowLeft':
       jugadorActual.position.x += velocidad;
       var gradosDerecha = 90;
       var anguloDerecha = THREE.MathUtils.degToRad(gradosDerecha);
@@ -452,7 +379,7 @@ document.addEventListener('keydown', function (e) {
       cambiarAccionExterna(2);
       break;
 
-    case 'ArrowUp':
+    case 'ArrowDown':
       jugadorActual.position.z -= velocidad;
       var gradosDerecha = 180;
       var anguloDerecha = THREE.MathUtils.degToRad(gradosDerecha);
@@ -460,7 +387,7 @@ document.addEventListener('keydown', function (e) {
       cambiarAccionExterna(2);
       break;
 
-    case 'ArrowDown':
+    case 'ArrowUp':
       jugadorActual.position.z += velocidad;
       var gradosDerecha = 0;
       var anguloDerecha = THREE.MathUtils.degToRad(gradosDerecha);
@@ -475,7 +402,7 @@ document.addEventListener('keydown', function (e) {
 
   if (!temporizadorIniciado) {
     impTemp(true);
-    temporizadorIniciado = true;    
+    temporizadorIniciado = true;
   }
 
   writeUserData(
@@ -484,7 +411,8 @@ document.addEventListener('keydown', function (e) {
     jugadorActual.position.z
   );
 
-  checkcollision(1); 
+  checkCollision(1);
+  checkCollision(2);
 
 });
 
@@ -494,34 +422,42 @@ document.addEventListener('keyup', (event) => {
 });
 
 //Checar colisiones con powerups
-function checkcollision(powerup) {
-  let powerName;
-  switch (powerup) {
-    case 1:
-      powerName = "speed";      
-      break;
-    default:
-      break;
-  }
+function checkCollision(powerup) {
+  const powerNames = {
+    1: "speed",
+    2: "freeze",
+  };
 
   const jugadorActual = scene.getObjectByName(currentUser.uid);
-  const powerupMesh = scene.getObjectByName(powerName);  
+  const powerupName = powerNames[powerup];
 
-  // Asegúrate de que playerBB y powerupBB sean instancias de Box3
-  let playerBB = jugadorActual.userData.boundingBox;
-  let powerupBB = powerupMesh.userData.boundingBox; 
+  const playerBB = jugadorActual.userData.boundingBox;
+  const powerupMesh = scene.getObjectByName(powerupName);
 
-  // Comprueba la intersección
-  if (playerBB.intersectsBox(powerupBB)) {
-    console.log("¡Colisión detectada!");
-    SpeedUp();
-    if (powerupMesh) {
+  if (playerBB && powerupMesh) {
+    const powerupBB = powerupMesh.userData.boundingBox;
+
+    // Comprueba la intersección
+    if (playerBB.intersectsBox(powerupBB)) {
+      console.log("¡Colisión detectada!");
+
+      // Dependiendo del powerUp, se ejecutará una función distinta
+      switch (powerup) {
+        case 1:
+          SpeedUp();
+          break;
+        case 2:
+          FreezeTime();
+          break;
+        default:
+          break;
+      }
+
       eliminarModelo(powerupMesh);
     }
-    
   }
-  
 }
+
 
 //Funciónes de activación de powerups
 function SpeedUp() {
@@ -530,9 +466,12 @@ function SpeedUp() {
   console.log(velocidad);
 
   // Después de 5 segundos, restablecer la velocidad a su valor original
-  setTimeout(function() {
-      velocidad /= 2;
+  setTimeout(function () {
+    velocidad /= 2;
   }, 5000); // 5000 milisegundos = 5 segundos
+}
+function FreezeTime() {
+  congelarTiempo();
 }
 
 //Eliminación de modelos
@@ -561,7 +500,7 @@ function cambiarAccionExterna(nuevaAccion) {
   }
 }
 
-scene.add(plane);
+// scene.add(plane);
 
 
 
