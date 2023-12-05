@@ -76,13 +76,14 @@ buttonLogout.addEventListener("click", async () => {
 });
 
 
+
+
 //Cosas de THREE.js
 import { GLTFLoader } from "./GLTFLoader.js";
 //Necesario para animaciones
 let clock = new THREE.Clock();
 //Temporizador
 let temporizadorIniciado = false;
-
 var canvas = document.getElementById("canvas");
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#34495E");
@@ -90,9 +91,9 @@ const camera = new THREE.PerspectiveCamera(
   60,
   canvas.width / canvas.height
 );
-
 //Camera settings
 camera.lookAt(0, 0, 0);
+//Luces
 var renderer = new THREE.WebGLRenderer({ canvas: canvas });
 renderer.setSize(canvas.width, canvas.height);
 renderer.shadowMap.enabled = true;
@@ -102,7 +103,6 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(1, 5, -1);
 directionalLight.castShadow = true;
 scene.add(directionalLight);
-
 //LoaderGLTF
 const loaderGLTF = new GLTFLoader();
 //Función para castear modelos sin collisions
@@ -217,20 +217,33 @@ function RandNum() {
   return Math.floor(Math.random() * 3) + 1;
 }
 let scenarioNum = RandNum();
+let limX, limZ;
 switch (scenarioNum) {
   case 1:
     castModel("./TV.glb", -5, -12.2, 0); //Cast TV Scenario
     camera.position.set(0, 45, -30);
+    //Limites x "40, -40"
+    limX = [40, -40];
+    //Limites z "35,-15"
+    limZ = [35, -15];
     break;
 
   case 2:
     castModel("./CAMP.glb", -5, -12.2, 0); //Cast CAMP Scenario
-    camera.position.set(0, 35, -40);
+    camera.position.set(0, 45, -1);
+    //Limites x "32, -32"
+    limX = [32, -32];
+    //Limites z "38,-14"
+    limZ = [38, -14];
     break;
 
   case 3:
     castModel("./FABRIC.glb", -5, -12.2, 0); //Cast FABRIC Scenario
     camera.position.set(0, 55, -36);
+    //Limites x "30, -30"
+    limX = [30, -30];
+    //Limites z "40,-20"
+    limZ = [40, -20];
     break;
 
   default:
@@ -239,7 +252,7 @@ switch (scenarioNum) {
 
 // COLISIONES DE POWERUPS
 castObjSquare("./zapatos.glb", 5, .5, 4, "speed", 1);
-castObjSquare("./ice.glb", 5, -.5, -8, "freeze", 3);
+castObjSquare("./ice.glb", 3, -.5, 4, "freeze", 3);
 
 
 /*
@@ -321,6 +334,11 @@ canvas.addEventListener("resize", resize);
 var velocidad = 0.25; // Velocidad inicial del jugador
 document.addEventListener('keydown', function (e) {
   const jugadorActual = scene.getObjectByName(currentUser.uid);
+  // Limitar la posición en x entre -40 y 40
+   //Limites x "40, -40"
+    //Limites z "35,-15"
+  jugadorActual.position.x = Math.max(limX[1], Math.min(limX[0], jugadorActual.position.x));
+  jugadorActual.position.z = Math.max(limZ[1], Math.min(limZ[0], jugadorActual.position.z));
 
   switch (e.key) {
     case 'ArrowRight':
@@ -369,12 +387,13 @@ document.addEventListener('keydown', function (e) {
     currentUser.uid,
     jugadorActual.position.x,
     jugadorActual.position.z
-  );
+  );   
 
   checkCollision(1);
   checkCollision(2);
 
 });
+
 document.addEventListener('keyup', (event) => {
   cambiarAccionExterna(0);
 });
