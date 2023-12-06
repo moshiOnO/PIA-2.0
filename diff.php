@@ -25,15 +25,15 @@
                 <div class="diffs">
 
                     <div class="easy">
-                        <a href="paginajuegos.php">Fácil</a>                        
+                        <a href="paginajuegos.php?diff=easy">Fácil</a>                        
                     </div>
 
                     <div class="normal">
-                        <a href="paginajuegos.php">Normal</a>
+                        <a href="paginajuegos.php?diff=normal">Normal</a>
                     </div>
 
                     <div class="hard">
-                        <a href="paginajuegos.php">Difícil</a>
+                        <a href="paginajuegos.php?diff=hard">Difícil</a>
                     </div>  
 
                 </div>

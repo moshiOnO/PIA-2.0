@@ -1,10 +1,19 @@
+<?php
+// Obtener el valor del parámetro 'diff' de la URL
+$dificultad = isset($_GET['diff']) ? $_GET['diff'] : 'facil';
+
+// Imprimir el valor para verificar
+echo 'Dificultad seleccionada: ' . $dificultad;
+
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    <script type= "module" src="Visualizacion.js"></script>
+    <!-- <script type= "module" src="easy.js"></script> -->
+    <script src="<?php echo $dificultad; ?>.js" type="module"></script>
     <script type= "module" src="javas/Temporizador.js"></script>
     <title>Nombre del Juego</title>
 </head>

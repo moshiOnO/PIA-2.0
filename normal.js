@@ -103,6 +103,8 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(1, 5, -1);
 directionalLight.castShadow = true;
 scene.add(directionalLight);
+
+//******FUNCIONES PARA CASTEAR MODELOS AL ESCENARIO*********
 //LoaderGLTF
 const loaderGLTF = new GLTFLoader();
 //Función para castear modelos sin collisions
@@ -209,16 +211,25 @@ async function castObjSquare(dirMesh, pX, pY, pz, nameMesh, scale) {
 
 }
 
-
-
-//Generación random de escenarios
-// Función para generar un número aleatorio entre 1 y 3
+//*************FUNCIONES PARA GENERACIÓN RANDOM DE NÚMEROS***************
+//Función para generar un número aleatorio entre 1 y 3
 function RandNum() {
   return Math.floor(Math.random() * 3) + 1;
 }
+//Función para generar números aleatorios con un rango
+function RandNumR(minimo, maximo) {
+  return Math.random() * (maximo - minimo) + minimo;
+}
+
+
+
+
+
+//**************Generación de modelos para el escenario*************
 let scenarioNum = RandNum();
 let limX, limZ;
-switch (scenarioNum) {
+//Selección del escenario
+switch (1) {
   case 1:
     castModel("./TV.glb", -5, -12.2, 0); //Cast TV Scenario
     camera.position.set(0, 45, -30);
@@ -251,8 +262,13 @@ switch (scenarioNum) {
 }
 
 // COLISIONES DE POWERUPS
-castObjSquare("./zapatos.glb", 5, .5, 4, "speed", 1);
-castObjSquare("./ice.glb", 3, -.5, 4, "freeze", 3);
+//castObjSquare("./zapatos.glb", 5, .5, 4, "speed", 1);
+//castObjSquare("./ice.glb", 3, -.5, 4, "freeze", 3);
+for (let index = 0; index < 2; index++) {
+  castObjSquare("./ice.glb", RandNumR(limX[1], limX[0]), -.5, RandNumR(limZ[1], limZ[0]), "freeze" + index, 3);
+  castObjSquare("./zapatos.glb", RandNumR(limX[1], limX[0]), -.5, RandNumR(limZ[1], limZ[0]), "speed" + index, 1);
+}
+
 
 
 /*
@@ -290,6 +306,9 @@ castObjSquare("./ice.glb", 3, -.5, 4, "freeze", 3);
      );
 */
 
+
+
+//******ONLINE AND INPUTS***********
 const starCountRef = ref(db, "jugadores");
 onValue(starCountRef, (snapshot) => {
   const data = snapshot.val();
@@ -335,8 +354,8 @@ var velocidad = 0.25; // Velocidad inicial del jugador
 document.addEventListener('keydown', function (e) {
   const jugadorActual = scene.getObjectByName(currentUser.uid);
   // Limitar la posición en x entre -40 y 40
-   //Limites x "40, -40"
-    //Limites z "35,-15"
+  //Limites x "40, -40"
+  //Limites z "35,-15"
   jugadorActual.position.x = Math.max(limX[1], Math.min(limX[0], jugadorActual.position.x));
   jugadorActual.position.z = Math.max(limZ[1], Math.min(limZ[0], jugadorActual.position.z));
 
@@ -387,7 +406,7 @@ document.addEventListener('keydown', function (e) {
     currentUser.uid,
     jugadorActual.position.x,
     jugadorActual.position.z
-  );   
+  );
 
   checkCollision(1);
   checkCollision(2);
@@ -399,7 +418,7 @@ document.addEventListener('keyup', (event) => {
 });
 
 
-
+//*************JUGABILIDAD*****************
 //Checar colisiones con powerups
 function checkCollision(powerup) {
   const powerNames = {
@@ -408,32 +427,37 @@ function checkCollision(powerup) {
   };
 
   const jugadorActual = scene.getObjectByName(currentUser.uid);
-  const powerupName = powerNames[powerup];
+  const powerupNameBase = powerNames[powerup];
+  let powerupName, playerBB, powerupMesh;
+  for (let index = 0; index < 2; index++) {
 
-  const playerBB = jugadorActual.userData.boundingBox;
-  const powerupMesh = scene.getObjectByName(powerupName);
+    playerBB = jugadorActual.userData.boundingBox;
+    powerupMesh = scene.getObjectByName(powerupNameBase + index);
+    //console.log(powerupNameBase + index);
 
-  if (playerBB && powerupMesh) {
-    const powerupBB = powerupMesh.userData.boundingBox;
+    if (playerBB && powerupMesh) {
+      const powerupBB = powerupMesh.userData.boundingBox;
 
-    // Comprueba la intersección
-    if (playerBB.intersectsBox(powerupBB)) {
-      console.log("¡Colisión detectada!");
+      // Comprueba la intersección
+      if (playerBB.intersectsBox(powerupBB)) {
+        console.log("¡Colisión detectada!");
 
-      // Dependiendo del powerUp, se ejecutará una función distinta
-      switch (powerup) {
-        case 1:
-          SpeedUp();
-          break;
-        case 2:
-          congelarTiempo();
-          break;
-        default:
-          break;
+        // Dependiendo del powerUp, se ejecutará una función distinta
+        switch (powerup) {
+          case 1:
+            SpeedUp();
+            break;
+          case 2:
+            congelarTiempo();
+            break;
+          default:
+            break;
+        }
+
+        eliminarModelo(powerupMesh);
       }
-
-      eliminarModelo(powerupMesh);
     }
+
   }
 }
 //Funciónes de activación de powerups
