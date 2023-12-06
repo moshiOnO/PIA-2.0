@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="diff.css">
 </head>
 <body>
+       <audio id="miAudio" controls autoplay>
+         <source src="music/diffs.mp3" type="audio/mp3">
+         Tu navegador no soporta el elemento de audio.
+       </audio>
+
     <div class="container">
 
         <div class="boxxie">
@@ -16,12 +21,12 @@
             <hr>
             <div class="configs">
 
-                <p>Inicia Sesión</p>
+                <!-- <p>Inicia Sesión</p>
                 <button id="button-login">Login</button>
                 
-                <br> <br>     
+                <br> <br>      -->
 
-                <p>Dificultad</p>
+                <!-- <p>Dificultad</p> -->
                 <div class="diffs">
 
                     <div class="easy">
@@ -49,5 +54,7 @@
         </div>
      
     </div>
+
+    <script src="javas/getVolume.js" type="module"></script>
 </body>
 </html>

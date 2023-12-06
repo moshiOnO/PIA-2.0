@@ -3,7 +3,7 @@
 $dificultad = isset($_GET['diff']) ? $_GET['diff'] : 'facil';
 
 // Imprimir el valor para verificar
-echo 'Dificultad seleccionada: ' . $dificultad;
+// echo 'Dificultad seleccionada: ' . $dificultad;
 
 ?>
 <!DOCTYPE html>
@@ -18,6 +18,11 @@ echo 'Dificultad seleccionada: ' . $dificultad;
     <title>Nombre del Juego</title>
 </head>
 <body>
+       <audio id="miAudio" controls autoplay>
+         <source src="music/<?php echo $dificultad; ?>.mp3" type="audio/mp3">
+         Tu navegador no soporta el elemento de audio.
+       </audio>
+
     <div class="container">
         <h1 id="timer">Nombre del Juego</h1>
         <hr>
@@ -36,5 +41,7 @@ echo 'Dificultad seleccionada: ' . $dificultad;
             <a href="Inicio.php">Salir</a>
         </div>
     </div>
+    
+    <script src="javas/getVolume.js" type="module"></script>
 </body>
 </html>

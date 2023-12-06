@@ -9,6 +9,10 @@
     <link rel="stylesheet" href="Inicion.css">
 </head>
 <body>
+      <audio id="miAudio" controls autoplay>
+         <source src="music/menu.mp3" type="audio/mp3">
+         Tu navegador no soporta el elemento de audio.
+       </audio>
     <div class="container">
         <div class="info-box">
             <h1>Nombre del juego</h1>
@@ -23,5 +27,6 @@
             <a href="Inicio.php">Salir</a>
         </div>
     </div>
+    <script src="javas/getVolume.js" type="module"></script>
 </body>
 </html>

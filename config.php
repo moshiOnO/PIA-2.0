@@ -7,8 +7,15 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="config.css">
+    
 </head>
 <body>
+
+    <audio id="miAudio" controls autoplay>
+        <source src="music/settings.mp3" type="audio/mp3">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
     <div class="container">
 
         <div class="boxxie">
@@ -17,9 +24,9 @@
             <div class="configs">
                             
                 <p>Volumen de música</p>
-                <input type="range" min="1" max="100" value="50" class="drag__bar">
-                <p>Volumen de sonidos</p>
-                <input type="range" min="1" max="100" value="50" class="drag__bar"> 
+                <input type="range" id="miSlider" min="0" max="1" step=".1" class="drag__bar">
+                <!-- <p>Volumen de sonidos</p>
+                <input type="range" min="1" max="100" value="50" class="drag__bar">  -->
                 
             </div>            
             
@@ -33,5 +40,8 @@
         </div>
      
     </div>
+
+    <script src="javas/setVolume.js" type="module"></script>
+    <script src="javas/getVolume.js" type="module"></script>
 </body>
 </html>

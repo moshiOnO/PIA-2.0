@@ -45,7 +45,7 @@ async function login() {
       // The signed-in user info.
       currentUser = result.user;
       //console.log(currentUser);
-      writeUserData(currentUser.uid, 0, 0);
+      writeUserData(currentUser.uid, 15, 15);
     })
     .catch((error) => {
       // Handle Errors here.
@@ -329,6 +329,7 @@ onValue(starCountRef, (snapshot) => {
       //scene.add(mesh);
       castPJ("./altair.glb", "monsterModel", key, 0);
     }
+    
 
     scene.getObjectByName(key).position.x = value.x;
     scene.getObjectByName(key).position.z = value.z;
@@ -460,6 +461,7 @@ function checkCollision(powerup) {
 
   }
 }
+
 //Funciónes de activación de powerups
 function SpeedUp() {
   // Aumentar temporalmente la velocidad
