@@ -76,14 +76,13 @@ buttonLogout.addEventListener("click", async () => {
 });
 
 
-
-
 //Cosas de THREE.js
 import { GLTFLoader } from "./GLTFLoader.js";
 //Necesario para animaciones
 let clock = new THREE.Clock();
 //Temporizador
 let temporizadorIniciado = false;
+
 var canvas = document.getElementById("canvas");
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#34495E");
@@ -91,9 +90,9 @@ const camera = new THREE.PerspectiveCamera(
   60,
   canvas.width / canvas.height
 );
+
 //Camera settings
 camera.lookAt(0, 0, 0);
-//Luces
 var renderer = new THREE.WebGLRenderer({ canvas: canvas });
 renderer.setSize(canvas.width, canvas.height);
 renderer.shadowMap.enabled = true;
@@ -104,7 +103,6 @@ directionalLight.position.set(1, 5, -1);
 directionalLight.castShadow = true;
 scene.add(directionalLight);
 
-//******FUNCIONES PARA CASTEAR MODELOS AL ESCENARIO*********
 //LoaderGLTF
 const loaderGLTF = new GLTFLoader();
 //Función para castear modelos sin collisions
@@ -211,50 +209,118 @@ async function castObjSquare(dirMesh, pX, pY, pz, nameMesh, scale) {
 
 }
 
-//*************FUNCIONES PARA GENERACIÓN RANDOM DE NÚMEROS***************
-//Función para generar un número aleatorio entre 1 y 3
+//Bombas
+
+const bombList = [];
+
+const generateBomb = () => {
+  const loader = new GLTFLoader();
+  const jugadorActual = scene.getObjectByName(currentUser.uid);
+  loader.load(
+    './bomb.glb',
+    (gltf) => {
+      const bombClone = gltf.scene;
+      bombClone.position.copy(jugadorActual.position);
+      bombList.push({ mesh: bombClone });
+      scene.add(bombClone);
+    },
+    undefined,
+    (error) => {
+      console.error('Error loading bomb model', error);
+    }
+  );
+};
+
+// Cajas
+
+const checkCollisionCajas = (object1, object2) => {
+  const box1 = new THREE.Box3().setFromObject(object1);
+  const box2 = new THREE.Box3().setFromObject(object2);
+  return box1.intersectsBox(box2);
+};
+
+const checkCollisions = () => {
+  bombList.forEach((bombObj, bombIndex) => {
+    const bomb = bombObj.mesh;   
+
+    // Verificar colisión con la primera caja
+    if (box1 && checkCollisionCajas(bomb, box1)) {
+      scene.remove(box1);
+      console.log('Box 1 destroyed!');
+    }
+
+    // Verificar colisión con la segunda caja
+    if (box2 && checkCollisionCajas(bomb, box2)) {
+      scene.remove(box2);
+      console.log('Box 2 destroyed!');
+    }
+  });
+};
+
+let box1 = null;
+let box2 = null;
+
+// Cargar modelo .glb
+const loadModel = (path, position, scale) => {
+  const loader = new GLTFLoader();
+  return new Promise((resolve, reject) => {
+    loader.load(
+      path,
+      (gltf) => {
+        const model = gltf.scene;
+        model.position.copy(position);
+        model.scale.copy(scale);
+        scene.add(model);
+        resolve(model);
+      },
+      undefined,
+      (error) => {
+        console.error('Error loading model', error);
+        reject(error);
+      }
+    );
+  });
+};
+
+const createBox = (path, position, scale) => {
+  return loadModel(path, position, scale);
+};
+
+// Crear cajas destructibles
+createBox('./metalbox.glb', new THREE.Vector3(-2, 0.5, -2), new THREE.Vector3(0.5, 0.5, 0.5)).then((result) => {
+  box1 = result;
+});
+
+createBox('./metalbox.glb', new THREE.Vector3(2, 0.5, 2), new THREE.Vector3(0.5, 0.5, 0.5)).then((result) => {
+  box2 = result;
+});
+
+
+
+
+
+
+
+//Generación random de escenarios
+// Función para generar un número aleatorio entre 1 y 3
 function RandNum() {
   return Math.floor(Math.random() * 3) + 1;
 }
-//Función para generar números aleatorios con un rango
-function RandNumR(minimo, maximo) {
-  return Math.random() * (maximo - minimo) + minimo;
-}
-
-
-
-
-
-//**************Generación de modelos para el escenario*************
 let scenarioNum = RandNum();
-let limX, limZ;
-//Selección del escenario
-switch (2) {
+switch (scenarioNum) {
   case 1:
     castModel("./TV.glb", -5, -12.2, 0); //Cast TV Scenario
     camera.position.set(0, 45, -30);
-    //Limites x "40, -40"
-    limX = [40, -40];
-    //Limites z "35,-15"
-    limZ = [35, -15];
     break;
 
   case 2:
     castModel("./CAMP.glb", -5, -12.2, 0); //Cast CAMP Scenario
-    camera.position.set(0, 35, -30);
-    //Limites x "32, -32"
-    limX = [32, -32];
-    //Limites z "38,-14"
-    limZ = [38, -14];
+    camera.position.set(0, 35, -40);
     break;
 
   case 3:
     castModel("./FABRIC.glb", -5, -12.2, 0); //Cast FABRIC Scenario
     camera.position.set(0, 55, -36);
-    //Limites x "30, -30"
-    limX = [30, -30];
-    //Limites z "40,-20"
-    limZ = [40, -20];
     break;
 
   default:
@@ -262,53 +328,9 @@ switch (2) {
 }
 
 // COLISIONES DE POWERUPS
-//castObjSquare("./zapatos.glb", 5, .5, 4, "speed", 1);
-//castObjSquare("./ice.glb", 3, -.5, 4, "freeze", 3);
-for (let index = 0; index < 2; index++) {
-  castObjSquare("./ice.glb", RandNumR(limX[1], limX[0]), -.5, RandNumR(limZ[1], limZ[0]), "freeze" + index, 3);
-  castObjSquare("./zapatos.glb", RandNumR(limX[1], limX[0]), -.5, RandNumR(limZ[1], limZ[0]), "speed" + index, 1);
-}
+castObjSquare("./zapatos.glb", 5, .5, 4, "speed", 1);
+castObjSquare("./ice.glb", 5, -.5, -8, "freeze", 3);
 
-
-
-/*
-     loaderGLTF.load(
-       "./Moneda.glb",
-       function (modelGLTF) {
-         const obj = modelGLTF.scene;
-         obj.scale.set(1,1,1);
-         obj.position.set(0,0,0);
-         obj.castShadow = true;
-         scene.add(obj);
-       }
-     );
-
-     loaderGLTF.load(
-       "./box.glb",
-       function (modelGLTF) {
-         const obj = modelGLTF.scene;
-         obj.scale.set(2,2,2);
-         obj.position.set(5,0.75,-4);
-         obj.castShadow = true;
-         scene.add(obj);
-       }
-     );
-
-     loaderGLTF.load(
-       "./ice.glb",
-       function (modelGLTF) {
-         const obj = modelGLTF.scene;
-         obj.scale.set(3,3,3);
-         obj.position.set(5,-0.50,-8);
-         obj.castShadow = true;
-         scene.add(obj);
-       }
-     );
-*/
-
-
-
-//******ONLINE AND INPUTS***********
 const starCountRef = ref(db, "jugadores");
 onValue(starCountRef, (snapshot) => {
   const data = snapshot.val();
@@ -353,11 +375,6 @@ canvas.addEventListener("resize", resize);
 var velocidad = 0.25; // Velocidad inicial del jugador
 document.addEventListener('keydown', function (e) {
   const jugadorActual = scene.getObjectByName(currentUser.uid);
-  // Limitar la posición en x entre -40 y 40
-  //Limites x "40, -40"
-  //Limites z "35,-15"
-  jugadorActual.position.x = Math.max(limX[1], Math.min(limX[0], jugadorActual.position.x));
-  jugadorActual.position.z = Math.max(limZ[1], Math.min(limZ[0], jugadorActual.position.z));
 
   switch (e.key) {
     case 'ArrowRight':
@@ -392,6 +409,11 @@ document.addEventListener('keydown', function (e) {
       cambiarAccionExterna(2);
       break;
 
+    case 'e':
+      generateBomb();
+
+      break;
+
     default:
       // Otras teclas, si es necesario
       break;
@@ -410,15 +432,15 @@ document.addEventListener('keydown', function (e) {
 
   checkCollision(1);
   checkCollision(2);
+  checkCollisions();
 
 });
-
 document.addEventListener('keyup', (event) => {
   cambiarAccionExterna(0);
 });
 
 
-//*************JUGABILIDAD*****************
+
 //Checar colisiones con powerups
 function checkCollision(powerup) {
   const powerNames = {
@@ -427,37 +449,32 @@ function checkCollision(powerup) {
   };
 
   const jugadorActual = scene.getObjectByName(currentUser.uid);
-  const powerupNameBase = powerNames[powerup];
-  let powerupName, playerBB, powerupMesh;
-  for (let index = 0; index < 2; index++) {
+  const powerupName = powerNames[powerup];
 
-    playerBB = jugadorActual.userData.boundingBox;
-    powerupMesh = scene.getObjectByName(powerupNameBase + index);
-    //console.log(powerupNameBase + index);
+  const playerBB = jugadorActual.userData.boundingBox;
+  const powerupMesh = scene.getObjectByName(powerupName);
 
-    if (playerBB && powerupMesh) {
-      const powerupBB = powerupMesh.userData.boundingBox;
+  if (playerBB && powerupMesh) {
+    const powerupBB = powerupMesh.userData.boundingBox;
 
-      // Comprueba la intersección
-      if (playerBB.intersectsBox(powerupBB)) {
-        console.log("¡Colisión detectada!");
+    // Comprueba la intersección
+    if (playerBB.intersectsBox(powerupBB)) {
+      console.log("¡Colisión detectada!");
 
-        // Dependiendo del powerUp, se ejecutará una función distinta
-        switch (powerup) {
-          case 1:
-            SpeedUp();
-            break;
-          case 2:
-            congelarTiempo();
-            break;
-          default:
-            break;
-        }
-
-        eliminarModelo(powerupMesh);
+      // Dependiendo del powerUp, se ejecutará una función distinta
+      switch (powerup) {
+        case 1:
+          SpeedUp();
+          break;
+        case 2:
+          congelarTiempo();
+          break;
+        default:
+          break;
       }
-    }
 
+      eliminarModelo(powerupMesh);
+    }
   }
 }
 //Funciónes de activación de powerups

@@ -1,4 +1,4 @@
-const tiempoLimiteSegundos = 15;
+const tiempoLimiteSegundos = 5;
 let tiempoRestante = tiempoLimiteSegundos;
 let timerInterval;  // Mover la declaración aquí para que tenga un alcance más amplio
 
@@ -18,6 +18,10 @@ export function impTemp(temporizadorIniciado){
             // Verifica si se ha agotado el tiempo
             if (tiempoRestante <= 0) {
                 detenerTemporizador();
+                var pts = parseInt(document.getElementById("pts").textContent);
+                console.log(pts);                
+                //Mandar a la base de datos los puntos obtenidos por las monedas * el tiempo restante
+                window.location.href = `savepts.php?pts=${pts}`;
                 console.log('Tiempo agotado. Fin del juego.');
             }
         }

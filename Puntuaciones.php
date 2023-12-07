@@ -18,11 +18,13 @@
         <div class="info-box">
             <h1>Puntuaciones</h1>
             <hr>
-            <p>Jugador 1 ........ 450</p>
+            <div id="usuariosPTS">
+            <!-- <p>Jugador 1 ........ 450</p>
             <p>Jugador 2 ........ 350</p>
             <p>Jugador 3 ........ 250</p>
             <p>Jugador 4 ........ 150</p>
-            <p>Jugador 5 ........ 50</p>
+            <p>Jugador 5 ........ 50</p> -->
+            </div>            
             <hr>
             <a href="Inicio.php">Continuar</a>
             <br>
@@ -31,5 +33,6 @@
     </div>
     
     <script src="javas/getVolume.js" type="module"></script>
+    <script src="javas/getPTS.js" type="module"></script>
 </body>
 </html>

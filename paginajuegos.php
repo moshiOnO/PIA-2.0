@@ -41,6 +41,8 @@ $dificultad = isset($_GET['diff']) ? $_GET['diff'] : 'facil';
             <a href="Inicio.php">Salir</a>
         </div>
     </div>
+
+    <p id="pts">8000</p>
     
     <script src="javas/getVolume.js" type="module"></script>
 </body>
