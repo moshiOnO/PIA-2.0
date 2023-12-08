@@ -1,6 +1,6 @@
 <?php
 // Obtener el valor del parámetro 'diff' de la URL
-$dificultad = isset($_GET['diff']) ? $_GET['diff'] : 'facil';
+$dificultad = isset($_GET['diff']) ? $_GET['diff'] : 'easy';
 
 // Imprimir el valor para verificar
 // echo 'Dificultad seleccionada: ' . $dificultad;
@@ -42,7 +42,7 @@ $dificultad = isset($_GET['diff']) ? $_GET['diff'] : 'facil';
         </div>
     </div>
 
-    <p id="pts">8000</p>
+    <p id="pts">0</p>
     
     <script src="javas/getVolume.js" type="module"></script>
 </body>

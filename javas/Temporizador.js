@@ -1,15 +1,17 @@
-const tiempoLimiteSegundos = 5;
+const tiempoLimiteSegundos = 150;
 let tiempoRestante = tiempoLimiteSegundos;
 let timerInterval;  // Mover la declaración aquí para que tenga un alcance más amplio
 
 var timer = document.getElementById("timer");
 timer.textContent = "Esperando Login";
 
+var ptsContainer = document.getElementById("pts");
+
 // Inicia un temporizador que se ejecuta cada segundo
-export function impTemp(temporizadorIniciado){
+export function impTemp(temporizadorIniciado) {
 
     timerInterval = setInterval(() => {
-        if (temporizadorIniciado) {            
+        if (temporizadorIniciado) {
             tiempoRestante--;
 
             // Actualiza el contenido del elemento HTML con el tiempo restante
@@ -18,10 +20,10 @@ export function impTemp(temporizadorIniciado){
             // Verifica si se ha agotado el tiempo
             if (tiempoRestante <= 0) {
                 detenerTemporizador();
-                var pts = parseInt(document.getElementById("pts").textContent);
-                console.log(pts);                
+                var pts = parseInt(ptsContainer.textContent);
+                console.log(pts);
                 //Mandar a la base de datos los puntos obtenidos por las monedas * el tiempo restante
-                window.location.href = `savepts.php?pts=${pts}`;
+                window.location.href = `savepts.php?pts=${pts * 0.25}`;
                 console.log('Tiempo agotado. Fin del juego.');
             }
         }
@@ -45,3 +47,18 @@ export function congelarTiempo() {
 function detenerTemporizador() {
     clearInterval(timerInterval);
 }
+
+//Función para modificar los puntos del html
+export function addptsHTML(ptsC) {
+    ptsContainer.textContent = ptsC;
+}
+
+//Función para mandar el puntaje a la otra ventana
+export function sendptsWindow() {
+    detenerTemporizador();
+    var pts = parseInt(ptsContainer.textContent);
+    console.log("Puntos en total:",pts);
+    //Mandar a la base de datos los puntos obtenidos por las monedas * el tiempo restante
+    window.location.href = `savepts.php?pts=${pts * tiempoRestante}`;
+}
+

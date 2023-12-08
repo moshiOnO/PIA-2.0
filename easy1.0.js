@@ -1,6 +1,6 @@
 import * as THREE from "./three.module.js";
 import { OrbitControls } from "./OrbitControls.js";
-import { impTemp, congelarTiempo, addptsHTML, sendptsWindow } from "./javas/Temporizador.js"
+import { impTemp, congelarTiempo } from "./javas/Temporizador.js"
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
@@ -45,7 +45,7 @@ async function login() {
       // The signed-in user info.
       currentUser = result.user;
       //console.log(currentUser);
-      writeUserData(currentUser.uid, 15, 15);
+      writeUserData(currentUser.uid, 0, 0);
     })
     .catch((error) => {
       // Handle Errors here.
@@ -229,7 +229,7 @@ function RandNumR(minimo, maximo) {
 let scenarioNum = RandNum();
 let limX, limZ;
 //Selección del escenario
-switch (1) {
+switch (2) {
   case 1:
     castModel("./TV.glb", -5, -12.2, 0); //Cast TV Scenario
     camera.position.set(0, 45, -30);
@@ -269,26 +269,42 @@ for (let index = 0; index < 2; index++) {
   castObjSquare("./zapatos.glb", RandNumR(limX[1], limX[0]), -.5, RandNumR(limZ[1], limZ[0]), "speed" + index, 1);
 }
 
-//Generaciones de las cajas con las monedas adentro
-//Primero generamos los modelos de las cajas con monedas aleatoramiente
-//Monedas (Siempre serán solo 6 monedas por escenario)
-let xrandC, zrandC;
-for (let index = 0; index < 6; index++) {
-  xrandC = RandNumR(limX[1], limX[0]); zrandC = RandNumR(limZ[1], limZ[0]);
-  castObjSquare("./box.glb", xrandC, 1, zrandC, "box" + index, 2);
-  castObjSquare("./coin.glb", xrandC, -.5, zrandC, "coin" + index, .25);
-}
-//Ahora generamos las demás cajas sin moneda adentro
-//easy: 2, normal: 6, hard: 12
-for (let index = 0; index < 6; index++) {
-  xrandC = RandNumR(limX[1], limX[0]);     zrandC = RandNumR(limZ[1], limZ[0]); 
-  castObjSquare("./box.glb", xrandC, 1, zrandC, "boxNC" + index, 2);    
-}
 
 
+/*
+     loaderGLTF.load(
+       "./Moneda.glb",
+       function (modelGLTF) {
+         const obj = modelGLTF.scene;
+         obj.scale.set(1,1,1);
+         obj.position.set(0,0,0);
+         obj.castShadow = true;
+         scene.add(obj);
+       }
+     );
 
+     loaderGLTF.load(
+       "./box.glb",
+       function (modelGLTF) {
+         const obj = modelGLTF.scene;
+         obj.scale.set(2,2,2);
+         obj.position.set(5,0.75,-4);
+         obj.castShadow = true;
+         scene.add(obj);
+       }
+     );
 
-
+     loaderGLTF.load(
+       "./ice.glb",
+       function (modelGLTF) {
+         const obj = modelGLTF.scene;
+         obj.scale.set(3,3,3);
+         obj.position.set(5,-0.50,-8);
+         obj.castShadow = true;
+         scene.add(obj);
+       }
+     );
+*/
 
 
 
@@ -334,8 +350,6 @@ function resize() {
 canvas.addEventListener("resize", resize);
 
 
-
-
 var velocidad = 0.25; // Velocidad inicial del jugador
 document.addEventListener('keydown', function (e) {
   const jugadorActual = scene.getObjectByName(currentUser.uid);
@@ -378,12 +392,6 @@ document.addEventListener('keydown', function (e) {
       cambiarAccionExterna(2);
       break;
 
-    case 'e':
-      generateBomb();
-
-      break;
-
-
     default:
       // Otras teclas, si es necesario
       break;
@@ -400,11 +408,8 @@ document.addEventListener('keydown', function (e) {
     jugadorActual.position.z
   );
 
-  checkCollision(1); checkCollision(2);
-  checkCollisionC(); checkCollisionB(); checkCollisionBNC()
-  checkPTS();
-  //checkCollisions();
-  //checkPlayerBoxCollisions();
+  checkCollision(1);
+  checkCollision(2);
 
 });
 
@@ -414,11 +419,6 @@ document.addEventListener('keyup', (event) => {
 
 
 //*************JUGABILIDAD*****************
-//Monedas coleccionadas
-let coinsCollected = 0;
-//Bools para verificar que la caja de la moneda está rota, para poder coleccionarla
-let box = [false, false, false, false, false, false];
-
 //Checar colisiones con powerups
 function checkCollision(powerup) {
   const powerNames = {
@@ -471,115 +471,6 @@ function SpeedUp() {
     velocidad /= 2;
   }, 5000); // 5000 milisegundos = 5 segundos
 }
-//Función de generación de bombas
-function generateBomb() {
-  const j = scene.getObjectByName(currentUser.uid);
-  let bombMesh = scene.getObjectByName("bomb");
-  if (bombMesh) {
-    let col = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-    col.setFromObject(bombMesh);
-    //console.log(col); 
-    // Haciendo col accesible externamente
-    bombMesh.userData.boundingBox = col;
-    bombMesh.position.x = j.position.x;
-    bombMesh.position.z = j.position.z;
-  }
-  else {
-    castObjSquare("./bomb.glb", j.position.x, j.position.y, j.position.z, "bomb", 1);
-  }
-}
-//Checar colisiones con monedas
-function checkCollisionC() {
-  const jugadorActual = scene.getObjectByName(currentUser.uid);
-  const powerupNameBase = "coin";
-  let playerBB, powerupMesh;
-  //Siempre son 6 monedas
-  for (let index = 0; index < 6; index++) {
-
-    playerBB = jugadorActual.userData.boundingBox;
-    powerupMesh = scene.getObjectByName(powerupNameBase + index);
-    //console.log(powerupNameBase + index);
-
-    if (playerBB && powerupMesh && box[index]) {
-      const powerupBB = powerupMesh.userData.boundingBox;
-
-      // Comprueba la intersección
-      if (playerBB.intersectsBox(powerupBB)) {
-        console.log("¡Colisión detectada!");
-        //easy: 100, normal: 200, hard: 300
-        coinsCollected += 200;
-        addptsHTML(coinsCollected);
-        console.log(coinsCollected);
-        eliminarModelo(powerupMesh);
-      }
-    }
-
-  }
-}
-//Checar colisiones con cajas
-function checkCollisionB() {
-  
-  const jugadorActual = scene.getObjectByName("bomb");
-  const powerupNameBase = "box";
-  let playerBB, powerupMesh;
-  //Siempre son 6 monedas
-  if (jugadorActual.userData.boundingBox) {
-    for (let index = 0; index < 6; index++) {
-
-      playerBB = jugadorActual.userData.boundingBox;
-      powerupMesh = scene.getObjectByName(powerupNameBase + index);
-      //console.log(powerupNameBase + index);
-
-      if (playerBB && powerupMesh) {
-        const powerupBB = powerupMesh.userData.boundingBox;
-
-        // Comprueba la intersección
-        if (playerBB.intersectsBox(powerupBB)) {
-          console.log("¡Colisión detectada!");
-          box[index] = true;       
-          eliminarModelo(powerupMesh);
-        }
-      }
-
-    }
-  }
-}
-function checkCollisionBNC() {
-  
-  const jugadorActual = scene.getObjectByName("bomb");
-  const powerupNameBase = "boxNC";
-  let playerBB, powerupMesh;
-  //easy: 2, normal: 6, hard: 12
-  if (jugadorActual.userData.boundingBox) {
-    for (let index = 0; index < 6; index++) {
-
-      playerBB = jugadorActual.userData.boundingBox;
-      powerupMesh = scene.getObjectByName(powerupNameBase + index);
-      //console.log(powerupNameBase + index);
-
-      if (playerBB && powerupMesh) {
-        const powerupBB = powerupMesh.userData.boundingBox;
-
-        // Comprueba la intersección
-        if (playerBB.intersectsBox(powerupBB)) {
-          console.log("¡Colisión detectada!");          
-          eliminarModelo(powerupMesh);
-        }
-      }
-
-    }
-  }
-}
-//Checar si todas las monedas fueron recolectadas
-function checkPTS() {
-  //easy: 600, normal:  1200, hard: 1800
-  if (coinsCollected >= 1200) {
-    //Ponemos el modelo del jugador fuera del campo de visión
-    writeUserData(currentUser.uid, 150, 0);
-    sendptsWindow();
-  }
-}
-
 //Eliminación de modelos
 function eliminarModelo(modelo) {
   // Elimina el modelo de la escena
