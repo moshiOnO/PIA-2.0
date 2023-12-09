@@ -449,12 +449,15 @@ function checkCollision(powerup) {
         switch (powerup) {
           case 1:
             SpeedUp();
+            soundEffect(powerNames[powerup]);
             break;
           case 2:
             congelarTiempo();
+            soundEffect(powerNames[powerup]);
             break;
           case 3:
             MultiplyPTS();
+            soundEffect(powerNames[powerup]);
             break;
           default:
             break;
@@ -483,6 +486,7 @@ function MultiplyPTS() {
   setTimeout(() => {
     // Después de 5 segundos, reanudar el temporizador
     console.log("JA, POBREEEEE");
+    soundEffect("endstar");
     isMultiply = false;
   }, 20000);
 }
@@ -528,6 +532,7 @@ function checkCollisionC() {
         //addptsHTML(coinsCollected);
         addptsHTML(points);
         console.log(coinsCollected);
+        soundEffect("coin");
         eliminarModelo(powerupMesh);
       }
     }
@@ -555,6 +560,7 @@ function checkCollisionB() {
         if (playerBB.intersectsBox(powerupBB)) {
           console.log("¡Colisión detectada!");
           box[index] = true;
+          soundEffect("explosion");
           eliminarModelo(powerupMesh);
         }
       }
@@ -581,6 +587,7 @@ function checkCollisionBNC() {
         // Comprueba la intersección
         if (playerBB.intersectsBox(powerupBB)) {
           console.log("¡Colisión detectada!");
+          soundEffect("explosion");
           eliminarModelo(powerupMesh);
         }
       }
@@ -633,6 +640,26 @@ function cambiarAccionExterna(nuevaAccion) {
     jugadorActual.userData.action.time = currentTime;
     jugadorActual.userData.action.play();
   }
+}
+//Reproduce sonidos
+//obtiene el audio del html por su id
+function soundEffect(sound) {
+  var audio = document.getElementById(sound);
+
+  //Pone el volumen del localStorage
+  function actualizarVolumenDesdeLocalStorage() {
+      var nuevoVolumen = localStorage.getItem("volumeMusic");
+      if (nuevoVolumen !== null) {
+          audio.volume = parseFloat(nuevoVolumen);
+          // Disparar un evento personalizado para notificar el cambio de volumen interno
+          var eventoCambioVolumenInterno = new CustomEvent("cambioVolumenInterno", { detail: { nuevoVolumen: nuevoVolumen } });
+          document.dispatchEvent(eventoCambioVolumenInterno);
+      }
+  }
+  // Llama a la función al cargar la página
+  actualizarVolumenDesdeLocalStorage();
+  //Después reproducimos el sonido
+  audio.play(); 
 }
 
 const cameraControl = new OrbitControls(camera, renderer.domElement);
