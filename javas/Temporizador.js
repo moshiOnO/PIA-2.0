@@ -44,7 +44,7 @@ export function congelarTiempo() {
 }
 
 // Función para detener el temporizador
-function detenerTemporizador() {
+export function detenerTemporizador() {
     clearInterval(timerInterval);
 }
 

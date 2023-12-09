@@ -1,6 +1,6 @@
 import * as THREE from "./three.module.js";
 import { OrbitControls } from "./OrbitControls.js";
-import { impTemp, congelarTiempo, addptsHTML, sendptsWindow } from "./javas/Temporizador.js"
+import { impTemp, congelarTiempo, addptsHTML, sendptsWindow, detenerTemporizador } from "./javas/Temporizador.js"
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
@@ -597,7 +597,19 @@ function checkPTS() {
     sendptsWindow();
   }
 }
-
+//Pausa
+document.addEventListener('DOMContentLoaded', function () {
+  // Tu código existente aquí...
+  // Agrega la función pause directamente al botón
+  document.querySelector('button[data-action="pause"]').onclick = function () {
+      const jugadorActual = scene.getObjectByName(currentUser.uid);
+      if (jugadorActual.userData.action) {
+          jugadorActual.userData.action.stop();
+          temporizadorIniciado = false;
+          detenerTemporizador();
+      }
+  };
+});
 //Eliminación de modelos
 function eliminarModelo(modelo) {
   // Elimina el modelo de la escena

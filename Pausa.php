@@ -1,3 +1,11 @@
+<?php
+// Obtener el valor del parámetro 'diff' de la URL
+$dificultad = isset($_GET['diff']) ? $_GET['diff'] : 'easy';
+
+// Imprimir el valor para verificar
+// echo 'Dificultad seleccionada: ' . $dificultad;
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +21,7 @@
             <div class="info-box">
                 <h1>Pausa</h1>
                 <hr>
-                <a href="paginajuegos.php">Continuar</a>
+                <a href="paginajuegos.php?diff=<?php echo $dificultad;?>">Continuar</a>
                 <br>
                 <a href="Inicio.php">Salir</a>
             </div>

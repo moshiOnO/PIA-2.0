@@ -15,6 +15,9 @@ $dificultad = isset($_GET['diff']) ? $_GET['diff'] : 'easy';
     <!-- <script type= "module" src="easy.js"></script> -->
     <script src="<?php echo $dificultad; ?>.js" type="module"></script>
     <script type= "module" src="javas/Temporizador.js"></script>
+    <!-- API -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="capturarPantalla.js"></script>
     <title>Nombre del Juego</title>
 </head>
 <body>
@@ -23,12 +26,40 @@ $dificultad = isset($_GET['diff']) ? $_GET['diff'] : 'easy';
          Tu navegador no soporta el elemento de audio.
        </audio>
 
+       <div>
+       <audio id="coin" controls>
+         <source src="sounds/coin.mp3" type="audio/mp3">
+         Tu navegador no soporta el elemento de audio.
+       </audio>
+       <audio id="endstar" controls>
+         <source src="sounds/endstar.mp3" type="audio/mp3">
+         Tu navegador no soporta el elemento de audio.
+       </audio>
+       <audio id="explosion" controls>
+         <source src="sounds/explosion.mp3" type="audio/mp3">
+         Tu navegador no soporta el elemento de audio.
+       </audio>
+       <audio id="freeze" controls>
+         <source src="sounds/freeze.mp3" type="audio/mp3">
+         Tu navegador no soporta el elemento de audio.
+       </audio>
+       <audio id="speed" controls>
+         <source src="sounds/speed.mp3" type="audio/mp3">
+         Tu navegador no soporta el elemento de audio.
+       </audio>
+       <audio id="star" controls>
+         <source src="sounds/star.mp3" type="audio/mp3">
+         Tu navegador no soporta el elemento de audio.
+       </audio>
+       </div>
+
     <div class="container">
         <h1 id="timer">Nombre del Juego</h1>
         <hr>
         <div class="game-box">
                 <button id="button-login">Login</button>
                 <button id="button-logout">Logout</button>
+                <button onclick="capturarPantalla()">Captura</button>
             <canvas id = "canvas" width = "700" height = "450">
                 
             </canvas>
@@ -36,7 +67,8 @@ $dificultad = isset($_GET['diff']) ? $_GET['diff'] : 'easy';
             <!--<img src="assets/game.jpg">-->
         </div>
         <div class="button-container">
-            <a href="Pausa.php">Pausa</a>
+            <!-- <a href="Pausa.php?diff=<?php echo $dificultad;?>">Pausa</a> -->
+            <button data-action="pause">Pausa</button>
             <a href="Inicio.php">Inicio</a>
             <a href="Inicio.php">Salir</a>
         </div>
