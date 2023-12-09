@@ -267,6 +267,7 @@ switch (2) {
 for (let index = 0; index < 2; index++) {
   castObjSquare("./ice.glb", RandNumR(limX[1], limX[0]), -.5, RandNumR(limZ[1], limZ[0]), "freeze" + index, 3);
   castObjSquare("./zapatos.glb", RandNumR(limX[1], limX[0]), -.5, RandNumR(limZ[1], limZ[0]), "speed" + index, 1);
+  castObjSquare("./star.glb", RandNumR(limX[1], limX[0]), 1, RandNumR(limZ[1], limZ[0]), "star" + index, 1.5);
 }
 
 //Generaciones de las cajas con las monedas adentro
@@ -281,8 +282,8 @@ for (let index = 0; index < 6; index++) {
 //Ahora generamos las demás cajas sin moneda adentro
 //easy: 2, normal: 6, hard: 12
 for (let index = 0; index < 2; index++) {
-  xrandC = RandNumR(limX[1], limX[0]);     zrandC = RandNumR(limZ[1], limZ[0]); 
-  castObjSquare("./box.glb", xrandC, 1, zrandC, "boxNC" + index, 2);    
+  xrandC = RandNumR(limX[1], limX[0]); zrandC = RandNumR(limZ[1], limZ[0]);
+  castObjSquare("./box.glb", xrandC, 1, zrandC, "boxNC" + index, 2);
 }
 
 
@@ -400,7 +401,7 @@ document.addEventListener('keydown', function (e) {
     jugadorActual.position.z
   );
 
-  checkCollision(1); checkCollision(2);
+  checkCollision(1); checkCollision(2); checkCollision(3);
   checkCollisionC(); checkCollisionB(); checkCollisionBNC()
   checkPTS();
   //checkCollisions();
@@ -416,6 +417,7 @@ document.addEventListener('keyup', (event) => {
 //*************JUGABILIDAD*****************
 //Monedas coleccionadas
 let coinsCollected = 0;
+let points = 0; let isMultiply = false;
 //Bools para verificar que la caja de la moneda está rota, para poder coleccionarla
 let box = [false, false, false, false, false, false];
 
@@ -424,6 +426,7 @@ function checkCollision(powerup) {
   const powerNames = {
     1: "speed",
     2: "freeze",
+    3: "star"
   };
 
   const jugadorActual = scene.getObjectByName(currentUser.uid);
@@ -450,6 +453,9 @@ function checkCollision(powerup) {
           case 2:
             congelarTiempo();
             break;
+          case 3:
+            MultiplyPTS();
+            break;
           default:
             break;
         }
@@ -470,6 +476,15 @@ function SpeedUp() {
   setTimeout(function () {
     velocidad /= 2;
   }, 5000); // 5000 milisegundos = 5 segundos
+}
+function MultiplyPTS() {
+  console.log("PUNTOS MULTIPLICADOOOOOS");
+  isMultiply = true;
+  setTimeout(() => {
+    // Después de 5 segundos, reanudar el temporizador
+    console.log("JA, POBREEEEE");
+    isMultiply = false;
+  }, 20000);
 }
 //Función de generación de bombas
 function generateBomb() {
@@ -507,8 +522,11 @@ function checkCollisionC() {
       if (playerBB.intersectsBox(powerupBB)) {
         console.log("¡Colisión detectada!");
         //easy: 100, normal: 200, hard: 300
-        coinsCollected += 100;
-        addptsHTML(coinsCollected);
+        if(isMultiply === false) {points += 100;}
+        else{points += 100*2}
+        coinsCollected += 1;
+        //addptsHTML(coinsCollected);
+        addptsHTML(points);
         console.log(coinsCollected);
         eliminarModelo(powerupMesh);
       }
@@ -518,7 +536,7 @@ function checkCollisionC() {
 }
 //Checar colisiones con cajas
 function checkCollisionB() {
-  
+
   const jugadorActual = scene.getObjectByName("bomb");
   const powerupNameBase = "box";
   let playerBB, powerupMesh;
@@ -536,7 +554,7 @@ function checkCollisionB() {
         // Comprueba la intersección
         if (playerBB.intersectsBox(powerupBB)) {
           console.log("¡Colisión detectada!");
-          box[index] = true;       
+          box[index] = true;
           eliminarModelo(powerupMesh);
         }
       }
@@ -545,7 +563,7 @@ function checkCollisionB() {
   }
 }
 function checkCollisionBNC() {
-  
+
   const jugadorActual = scene.getObjectByName("bomb");
   const powerupNameBase = "boxNC";
   let playerBB, powerupMesh;
@@ -562,7 +580,7 @@ function checkCollisionBNC() {
 
         // Comprueba la intersección
         if (playerBB.intersectsBox(powerupBB)) {
-          console.log("¡Colisión detectada!");          
+          console.log("¡Colisión detectada!");
           eliminarModelo(powerupMesh);
         }
       }
@@ -573,7 +591,7 @@ function checkCollisionBNC() {
 //Checar si todas las monedas fueron recolectadas
 function checkPTS() {
   //easy: 600, normal:  1200, hard: 1800
-  if (coinsCollected >= 600) {
+  if (coinsCollected >= 6) {
     //Ponemos el modelo del jugador fuera del campo de visión
     writeUserData(currentUser.uid, 150, 0);
     sendptsWindow();
