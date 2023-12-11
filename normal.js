@@ -45,7 +45,9 @@ async function login() {
       // The signed-in user info.
       currentUser = result.user;
       //console.log(currentUser);
-      writeUserData(currentUser.uid, 15, 15);
+      var grados = 180;
+      var angulo = THREE.MathUtils.degToRad(grados);
+      writeUserData(currentUser.uid, 15, 15, angulo, 0);
     })
     .catch((error) => {
       // Handle Errors here.
@@ -282,8 +284,8 @@ for (let index = 0; index < 6; index++) {
 //Ahora generamos las demás cajas sin moneda adentro
 //easy: 2, normal: 6, hard: 12
 for (let index = 0; index < 6; index++) {
-  xrandC = RandNumR(limX[1], limX[0]);     zrandC = RandNumR(limZ[1], limZ[0]); 
-  castObjSquare("./box.glb", xrandC, 1, zrandC, "boxNC" + index, 2);    
+  xrandC = RandNumR(limX[1], limX[0]); zrandC = RandNumR(limZ[1], limZ[0]);
+  castObjSquare("./box.glb", xrandC, 1, zrandC, "boxNC" + index, 2);
 }
 
 
@@ -317,13 +319,17 @@ onValue(starCountRef, (snapshot) => {
 
     scene.getObjectByName(key).position.x = value.x;
     scene.getObjectByName(key).position.z = value.z;
+    scene.getObjectByName(key).rotation.set(0, value.rotation, 0);
+    cambiarAccionOnline(value.a, key);
   });
 });
 //Escribir
-function writeUserData(userId, positionX, positionZ) {
+function writeUserData(userId, positionX, positionZ, rotation, animation) {
   set(ref(db, "jugadores/" + userId), {
     x: positionX,
     z: positionZ,
+    a: animation,
+    rotation: rotation,
   });
 }
 function resize() {
@@ -346,11 +352,13 @@ document.addEventListener('keydown', function (e) {
   jugadorActual.position.x = Math.max(limX[1], Math.min(limX[0], jugadorActual.position.x));
   jugadorActual.position.z = Math.max(limZ[1], Math.min(limZ[0], jugadorActual.position.z));
 
+  let rotationgrado;
   switch (e.key) {
     case 'ArrowRight':
       jugadorActual.position.x -= velocidad;
       var gradosDerecha = 270;
       var anguloDerecha = THREE.MathUtils.degToRad(gradosDerecha);
+      rotationgrado = anguloDerecha;
       jugadorActual.rotation.set(0, anguloDerecha, 0);
       cambiarAccionExterna(2);
       break;
@@ -359,6 +367,7 @@ document.addEventListener('keydown', function (e) {
       jugadorActual.position.x += velocidad;
       var gradosDerecha = 90;
       var anguloDerecha = THREE.MathUtils.degToRad(gradosDerecha);
+      rotationgrado = anguloDerecha;
       jugadorActual.rotation.set(0, anguloDerecha, 0);
       cambiarAccionExterna(2);
       break;
@@ -367,6 +376,7 @@ document.addEventListener('keydown', function (e) {
       jugadorActual.position.z -= velocidad;
       var gradosDerecha = 180;
       var anguloDerecha = THREE.MathUtils.degToRad(gradosDerecha);
+      rotationgrado = anguloDerecha;
       jugadorActual.rotation.set(0, anguloDerecha, 0);
       cambiarAccionExterna(2);
       break;
@@ -375,6 +385,7 @@ document.addEventListener('keydown', function (e) {
       jugadorActual.position.z += velocidad;
       var gradosDerecha = 0;
       var anguloDerecha = THREE.MathUtils.degToRad(gradosDerecha);
+      rotationgrado = anguloDerecha;
       jugadorActual.rotation.set(0, anguloDerecha, 0);
       cambiarAccionExterna(2);
       break;
@@ -390,17 +401,19 @@ document.addEventListener('keydown', function (e) {
       break;
   }
 
-  if (!temporizadorIniciado) {      
+  if (!temporizadorIniciado) {
     impTemp(true);
     temporizadorIniciado = true;
   }
 
-  
+
 
   writeUserData(
     currentUser.uid,
     jugadorActual.position.x,
-    jugadorActual.position.z
+    jugadorActual.position.z,
+    jugadorActual.rotation.y,
+    2
   );
 
   checkCollision(1); checkCollision(2); checkCollision(3);
@@ -413,6 +426,15 @@ document.addEventListener('keydown', function (e) {
 
 document.addEventListener('keyup', (event) => {
   cambiarAccionExterna(0);
+  //cambio Online
+  const jugadorActual = scene.getObjectByName(currentUser.uid);
+  writeUserData(
+    currentUser.uid,
+    jugadorActual.position.x,
+    jugadorActual.position.z,
+    jugadorActual.rotation.y,
+    0
+  );
 });
 
 
@@ -528,8 +550,8 @@ function checkCollisionC() {
       if (playerBB.intersectsBox(powerupBB)) {
         console.log("¡Colisión detectada!");
         //easy: 100, normal: 200, hard: 300
-        if(isMultiply === false) {points += 200;}
-        else{points += 200*2}
+        if (isMultiply === false) { points += 200; }
+        else { points += 200 * 2 }
         coinsCollected += 1;
         //addptsHTML(coinsCollected);
         addptsHTML(points);
@@ -602,7 +624,10 @@ function checkPTS() {
   //easy: 600, normal:  1200, hard: 1800
   if (coinsCollected >= 6) {
     //Ponemos el modelo del jugador fuera del campo de visión
-    writeUserData(currentUser.uid, 150, 0);
+    //writeUserData(currentUser.uid, 150, 0);
+    var grados = 180;
+    var angulo = THREE.MathUtils.degToRad(grados);
+    writeUserData(currentUser.uid, 150, 0, angulo, 0);    
     sendptsWindow();
   }
 }
@@ -611,12 +636,12 @@ document.addEventListener('DOMContentLoaded', function () {
   // Tu código existente aquí...
   // Agrega la función pause directamente al botón
   document.querySelector('button[data-action="pause"]').onclick = function () {
-      const jugadorActual = scene.getObjectByName(currentUser.uid);
-      if (jugadorActual.userData.action) {
-          jugadorActual.userData.action.stop();
-          temporizadorIniciado = false;
-          detenerTemporizador();
-      }
+    const jugadorActual = scene.getObjectByName(currentUser.uid);
+    if (jugadorActual.userData.action) {
+      jugadorActual.userData.action.stop();
+      temporizadorIniciado = false;
+      detenerTemporizador();
+    }
   };
 });
 //Eliminación de modelos
@@ -643,6 +668,18 @@ function cambiarAccionExterna(nuevaAccion) {
     jugadorActual.userData.action.play();
   }
 }
+//Cambiar animación online
+function cambiarAccionOnline(nuevaAccion, id) {
+  const jugadorActual = scene.getObjectByName(id);
+
+  if (jugadorActual.userData.action) {
+    let currentTime = jugadorActual.userData.action.time;
+    jugadorActual.userData.action.stop(); // Detener la acción actual si es necesario
+    jugadorActual.userData.action = jugadorActual.userData.mixer.clipAction(modelGLTF4ext.animations[nuevaAccion]);
+    jugadorActual.userData.action.time = currentTime;
+    jugadorActual.userData.action.play();
+  }
+}
 //Reproduce sonidos
 //obtiene el audio del html por su id
 function soundEffect(sound) {
@@ -650,18 +687,18 @@ function soundEffect(sound) {
 
   //Pone el volumen del localStorage
   function actualizarVolumenDesdeLocalStorage() {
-      var nuevoVolumen = localStorage.getItem("volumeMusic");
-      if (nuevoVolumen !== null) {
-          audio.volume = parseFloat(nuevoVolumen);
-          // Disparar un evento personalizado para notificar el cambio de volumen interno
-          var eventoCambioVolumenInterno = new CustomEvent("cambioVolumenInterno", { detail: { nuevoVolumen: nuevoVolumen } });
-          document.dispatchEvent(eventoCambioVolumenInterno);
-      }
+    var nuevoVolumen = localStorage.getItem("volumeMusic");
+    if (nuevoVolumen !== null) {
+      audio.volume = parseFloat(nuevoVolumen);
+      // Disparar un evento personalizado para notificar el cambio de volumen interno
+      var eventoCambioVolumenInterno = new CustomEvent("cambioVolumenInterno", { detail: { nuevoVolumen: nuevoVolumen } });
+      document.dispatchEvent(eventoCambioVolumenInterno);
+    }
   }
   // Llama a la función al cargar la página
   actualizarVolumenDesdeLocalStorage();
   //Después reproducimos el sonido
-  audio.play(); 
+  audio.play();
 }
 
 const cameraControl = new OrbitControls(camera, renderer.domElement);

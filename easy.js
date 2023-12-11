@@ -45,7 +45,9 @@ async function login() {
       // The signed-in user info.
       currentUser = result.user;
       //console.log(currentUser);
-      writeUserData(currentUser.uid, 15, 15);
+      var grados = 180;
+      var angulo = THREE.MathUtils.degToRad(grados);
+      writeUserData(currentUser.uid, 15, 15, angulo, 0);
     })
     .catch((error) => {
       // Handle Errors here.
@@ -317,13 +319,17 @@ onValue(starCountRef, (snapshot) => {
 
     scene.getObjectByName(key).position.x = value.x;
     scene.getObjectByName(key).position.z = value.z;
+    scene.getObjectByName(key).rotation.set(0, value.rotation, 0);
+    cambiarAccionOnline(value.a, key);
   });
 });
 //Escribir
-function writeUserData(userId, positionX, positionZ) {
+function writeUserData(userId, positionX, positionZ, rotation, animation) {
   set(ref(db, "jugadores/" + userId), {
     x: positionX,
     z: positionZ,
+    a: animation,
+    rotation: rotation,
   });
 }
 function resize() {
@@ -346,11 +352,13 @@ document.addEventListener('keydown', function (e) {
   jugadorActual.position.x = Math.max(limX[1], Math.min(limX[0], jugadorActual.position.x));
   jugadorActual.position.z = Math.max(limZ[1], Math.min(limZ[0], jugadorActual.position.z));
 
+  let rotationgrado;
   switch (e.key) {
     case 'ArrowRight':
       jugadorActual.position.x -= velocidad;
       var gradosDerecha = 270;
       var anguloDerecha = THREE.MathUtils.degToRad(gradosDerecha);
+      rotationgrado = anguloDerecha;
       jugadorActual.rotation.set(0, anguloDerecha, 0);
       cambiarAccionExterna(2);
       break;
@@ -359,6 +367,7 @@ document.addEventListener('keydown', function (e) {
       jugadorActual.position.x += velocidad;
       var gradosDerecha = 90;
       var anguloDerecha = THREE.MathUtils.degToRad(gradosDerecha);
+      rotationgrado = anguloDerecha;
       jugadorActual.rotation.set(0, anguloDerecha, 0);
       cambiarAccionExterna(2);
       break;
@@ -367,6 +376,7 @@ document.addEventListener('keydown', function (e) {
       jugadorActual.position.z -= velocidad;
       var gradosDerecha = 180;
       var anguloDerecha = THREE.MathUtils.degToRad(gradosDerecha);
+      rotationgrado = anguloDerecha;
       jugadorActual.rotation.set(0, anguloDerecha, 0);
       cambiarAccionExterna(2);
       break;
@@ -375,6 +385,7 @@ document.addEventListener('keydown', function (e) {
       jugadorActual.position.z += velocidad;
       var gradosDerecha = 0;
       var anguloDerecha = THREE.MathUtils.degToRad(gradosDerecha);
+      rotationgrado = anguloDerecha;
       jugadorActual.rotation.set(0, anguloDerecha, 0);
       cambiarAccionExterna(2);
       break;
@@ -398,7 +409,9 @@ document.addEventListener('keydown', function (e) {
   writeUserData(
     currentUser.uid,
     jugadorActual.position.x,
-    jugadorActual.position.z
+    jugadorActual.position.z,
+    jugadorActual.rotation.y,
+    2
   );
 
   checkCollision(1); checkCollision(2); checkCollision(3);
@@ -411,6 +424,15 @@ document.addEventListener('keydown', function (e) {
 
 document.addEventListener('keyup', (event) => {
   cambiarAccionExterna(0);
+  //cambio Online
+  const jugadorActual = scene.getObjectByName(currentUser.uid);
+  writeUserData(
+    currentUser.uid,
+    jugadorActual.position.x,
+    jugadorActual.position.z,
+    jugadorActual.rotation.y,
+    0
+  );
 });
 
 
@@ -600,7 +622,9 @@ function checkPTS() {
   //easy: 600, normal:  1200, hard: 1800
   if (coinsCollected >= 6) {
     //Ponemos el modelo del jugador fuera del campo de visión
-    writeUserData(currentUser.uid, 150, 0);
+    var grados = 180;
+    var angulo = THREE.MathUtils.degToRad(grados);
+    writeUserData(currentUser.uid, 150, 0, angulo, 0); 
     sendptsWindow();
   }
 }
@@ -632,6 +656,18 @@ function eliminarModelo(modelo) {
 //Cambiar animación
 function cambiarAccionExterna(nuevaAccion) {
   const jugadorActual = scene.getObjectByName(currentUser.uid);
+
+  if (jugadorActual.userData.action) {
+    let currentTime = jugadorActual.userData.action.time;
+    jugadorActual.userData.action.stop(); // Detener la acción actual si es necesario
+    jugadorActual.userData.action = jugadorActual.userData.mixer.clipAction(modelGLTF4ext.animations[nuevaAccion]);
+    jugadorActual.userData.action.time = currentTime;
+    jugadorActual.userData.action.play();
+  }
+}
+//Cambiar animación online
+function cambiarAccionOnline(nuevaAccion, id) {
+  const jugadorActual = scene.getObjectByName(id);
 
   if (jugadorActual.userData.action) {
     let currentTime = jugadorActual.userData.action.time;
