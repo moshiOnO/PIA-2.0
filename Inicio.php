@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,6 +22,8 @@
             <a href="diff.php">Jugar</a>
             <br>
             <a href="Puntuaciones.php">Puntuaciones</a>
+            <br>
+            <a href="paginajuegos.php?diff=coop">Jugar cooperativo</a>
             <br>
             <a href="config.php">Configuración</a>
             <br>
