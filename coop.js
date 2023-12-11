@@ -102,8 +102,13 @@ camera.lookAt(0, 0, 0);
 var renderer = new THREE.WebGLRenderer({ canvas: canvas });
 renderer.setSize(canvas.width, canvas.height);
 renderer.shadowMap.enabled = true;
-const hemisphereLight = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
+//Luces
+const hemisphereLight = new THREE.HemisphereLight(0xffaabb, 0x8a2be2, .8);
 scene.add(hemisphereLight);
+// Configuración de la iluminación ambiental
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.2); // color, intensidad
+scene.add(ambientLight);
+//Iluminación focal
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(1, 5, -1);
 directionalLight.castShadow = true;
@@ -437,7 +442,9 @@ document.addEventListener('keydown', function (e) {
     }
 
     if (!temporizadorIniciado) {
-      impTemp(true);
+      //impTemp(true);
+      var timer = document.getElementById("timer");
+      timer.textContent = "ONLINE";
       temporizadorIniciado = true;
     }
 
@@ -533,7 +540,7 @@ function checkCollisionB() {
             deleteBombData("bomb" + currentUser.uid);
             deleteUserData(currentUser.uid);
             //Redirigimos a otra ventana
-            window.location.href = `Inicio.php`;            
+            window.location.href = `Inicio.php`;
           }
         }
       }
