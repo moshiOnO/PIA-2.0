@@ -99,12 +99,18 @@ camera.lookAt(0, 0, 0);
 var renderer = new THREE.WebGLRenderer({ canvas: canvas });
 renderer.setSize(canvas.width, canvas.height);
 renderer.shadowMap.enabled = true;
-const hemisphereLight = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
+//Luces
+const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x808080, 0.8);
 scene.add(hemisphereLight);
+// Configuración de la iluminación ambiental
+const ambientLight = new THREE.AmbientLight(0x404040, 0.5); // color, intensidad
+scene.add(ambientLight);
+//Iluminación focal
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(1, 5, -1);
 directionalLight.castShadow = true;
 scene.add(directionalLight);
+
 
 //******FUNCIONES PARA CASTEAR MODELOS AL ESCENARIO*********
 //LoaderGLTF
