@@ -16,8 +16,8 @@
        </audio>
     <div class="container">
         <div class="info-box">
-            <h1>Nombre del juego</h1>
-            <p>Eslogan</p>
+            <h1>Treasure man</h1>
+            <p>Los tesoros de bomberman</p>
             <hr>
             <a href="diff.php">Jugar</a>
             <br>
