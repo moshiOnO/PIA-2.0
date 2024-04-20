@@ -462,7 +462,7 @@ document.addEventListener('keydown', function (e) {
     //Borramos los datos de firebase
     deleteBombData("bomb" + currentUser.uid);
     deleteUserData(currentUser.uid);
-    //Redirigimos a otra ventana
+    //Redirigimos a otra ventana (perditste)
     window.location.href = `Inicio.php`;
   }
   //checkCollisions();
@@ -539,7 +539,7 @@ function checkCollisionB() {
             //Ya eliminado el rival, toca la del usuario
             deleteBombData("bomb" + currentUser.uid);
             deleteUserData(currentUser.uid);
-            //Redirigimos a otra ventana
+            //Redirigimos a otra ventana (Ganaste)
             window.location.href = `Inicio.php`;
           }
         }
